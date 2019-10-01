@@ -1,0 +1,136 @@
+Executable File Path: /opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot
+Signal: 11
+      (SIGSEGV)
+
+Register Information
+r0   = 0x00000000, r1   = 0xf7695c30
+r2   = 0x0000000a, r3   = 0x00000000
+r4   = 0x00c6f418, r5   = 0xffd4e9b0
+r6   = 0x00000001, r7   = 0x00000000
+r8   = 0x00000000, r9   = 0xf6dc6824
+r10  = 0x00c4b9b0, fp   = 0x00000000
+ip   = 0xf7695c30, sp   = 0xffd4e6a0
+lr   = 0xf758dfd8, pc   = 0xf758e13c
+cpsr = 0x600b0010
+
+Memory information
+MemTotal:   848220 KB
+MemFree:	   455228 KB
+Buffers:	    19008 KB
+Cached:	    142748 KB
+VmPeak:	     67532 KB
+VmSize:	     67508 KB
+VmLck:	          0 KB
+VmPin:	          0 KB
+VmHWM:	      12388 KB
+VmRSS:	      12388 KB
+VmData:	     18724 KB
+VmStk:	        132 KB
+VmExe:	         40 KB
+VmLib:	      14240 KB
+VmPTE:	         88 KB
+VmSwap:	         0 KB
+
+Threads Information
+Threads: 3
+PID = 12288 TID = 12288
+12288 12292 12293 
+
+Maps Information
+          926000           930000 r-xp /opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot
+          c31000           d7c000 rw-p [heap]
+        f4abc000         f4ac1000 r-xp /usr/lib/libnss_dns-2.24.so
+        f4cd2000         f4cdc000 r-xp /usr/lib/libnss_files-2.24.so
+        f4ced000         f4cf8000 r-xp /usr/lib/libnss_nis-2.24.so
+        f4d09000         f4d1b000 r-xp /usr/lib/libnsl-2.24.so
+        f4d2e000         f4d35000 r-xp /usr/lib/libnss_compat-2.24.so
+        f4d5c000         f4d5f000 r-xp /usr/lib/libcap.so.2.24
+        f4d6f000         f4dcb000 r-xp /usr/lib/libsystemd.so.0.16.0
+        f4dde000         f4de3000 r-xp /usr/lib/libsmack.so.1.3.1
+        f4df4000         f4e02000 r-xp /usr/lib/libsensord-shared.so
+        f4e13000         f4e3e000 r-xp /usr/lib/libblkid.so.1.1.0
+        f4e52000         f4e8b000 r-xp /usr/lib/libmount.so.1.1.0
+        f4e9f000         f4eb8000 r-xp /usr/lib/liblzma.so.5.2.4
+        f4ec8000         f4ed3000 r-xp /usr/lib/libbuxton2.so.1.5.5
+        f4ee3000         f4eea000 r-xp /usr/lib/libminizip.so.1.0.0
+        f4efb000         f4f16000 r-xp /usr/lib/libpkgmgr_parser.so.0.17.1
+        f4f26000         f4f2c000 r-xp /usr/lib/librt-2.24.so
+        f6939000         f693d000 r-xp /usr/lib/libgdbm.so.3.0.0
+        f694e000         f6953000 r-xp /usr/lib/libffi.so.6.0.2
+        f6963000         f6975000 r-xp /usr/lib/libresolv-2.24.so
+        f6989000         f698b000 r-xp /usr/lib/libgmodule-2.0.so.0.5200.2
+        f699c000         f69bc000 r-xp /usr/lib/libsensor-genuine.so.4.0.3
+        f69bd000         f69c1000 r-xp /usr/lib/libcapi-appfw-app-control-uri.so.0.11.10
+        f69d1000         f6a1f000 r-xp /usr/lib/libpcre.so.1.2.9
+        f6a2f000         f6a48000 r-xp /usr/lib/libjson-glib-1.0.so.0.400.2
+        f6a5a000         f6a5d000 r-xp /usr/lib/libuuid.so.1.3.0
+        f6a6d000         f6a76000 r-xp /usr/lib/libstorage.so.0.1
+        f6a86000         f6a88000 r-xp /usr/lib/libttrace.so.1.1
+        f6a98000         f6b6e000 r-xp /usr/lib/libxml2.so.2.9.7
+        f6b84000         f6b87000 r-xp /usr/lib/libiniparser.so.0
+        f6b97000         f6c36000 r-xp /usr/lib/libsqlite3.so.0.8.6
+        f6c4a000         f6c50000 r-xp /usr/lib/libvconf.so.0.3.1
+        f6c61000         f6c7e000 r-xp /usr/lib/libpkgmgr-info.so.0.17.1
+        f6c8f000         f6c94000 r-xp /usr/lib/libtzplatform-config-2.0.so.2.0.0
+        f6ca9000         f6cae000 r-xp /usr/lib/libxdgmime.so.1.1.0
+        f6cbf000         f6d31000 r-xp /usr/lib/libm-2.24.so
+        f6d42000         f6d89000 r-xp /usr/lib/libefl.so.1.22.99
+        f6d9e000         f6db6000 r-xp /usr/lib/libeo.so.1.22.99
+        f6dc7000         f6e25000 r-xp /usr/lib/libeina.so.1.22.99
+        f6e37000         f6e46000 r-xp /usr/lib/libz.so.1.2.11
+        f6e58000         f6fae000 r-xp /usr/lib/libcrypto.so.1.1
+        f6fd7000         f7022000 r-xp /usr/lib/libssl.so.1.1
+        f703a000         f7159000 r-xp /usr/lib/libicuuc.so.63.1
+        f7177000         f717a000 r-xp /usr/lib/libdl-2.24.so
+        f718b000         f71a2000 r-xp /usr/lib/libnghttp2.so.14.17.1
+        f71b4000         f71be000 r-xp /usr/lib/libcares.so.2.2.0
+        f71cf000         f71d2000 r-xp /usr/lib/libcapi-system-info.so.0.5.1
+        f71e2000         f7229000 r-xp /usr/lib/libgobject-2.0.so.0.5200.2
+        f723a000         f7392000 r-xp /usr/lib/libgio-2.0.so.0.5200.2
+        f73a6000         f73ae000 r-xp /usr/lib/libappcore-common.so.1.13.4
+        f73be000         f73c5000 r-xp /usr/lib/libcapi-appfw-app-control.so.0.11.10
+        f73d5000         f74cd000 r-xp /usr/lib/libglib-2.0.so.0.5200.2
+        f74de000         f74e5000 r-xp /usr/lib/libbundle.so.0.3.2
+        f74f5000         f7526000 r-xp /usr/lib/libaul.so.0.18.3
+        f7537000         f754f000 r-xp /usr/lib/libgcc_s.so.1
+        f755f000         f7684000 r-xp /usr/lib/libc-2.24.so
+        f7699000         f778a000 r-xp /usr/lib/libstdc++.so.6.0.22
+        f77a2000         f77f6000 r-xp /usr/lib/libecore.so.1.22.99
+        f7809000         f7810000 r-xp /usr/lib/libdlog.so.0.0.0
+        f7826000         f7877000 r-xp /usr/lib/libcurl.so.4.5.0
+        f7889000         f789e000 r-xp /usr/lib/libcapi-system-peripheral-io.so.0.1.0
+        f78af000         f78bb000 r-xp /usr/lib/libcapi-base-common.so.0.4.48
+        f78cd000         f78d0000 r-xp /usr/lib/libappcore-agent.so.1.2.11
+        f78e0000         f78f6000 r-xp /usr/lib/libpthread-2.24.so
+        f791b000         f793b000 r-xp /usr/lib/ld-2.24.so
+        ffd30000         ffd51000 rw-p [stack]
+End of Maps Information
+
+Callstack Information (PID:12288)
+Call Stack Count: 25
+ 0: (0xf758e13c) [/usr/lib/libc-2.24.so] + 0x2f13c
+ 1: strtol + 0x24 (0xf758dfd8) [/usr/lib/libc-2.24.so] + 0x2efd8
+ 2: NubisonCB_Invoke(char*, char*, char*) + 0xc2 (0x009276af) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x16af
+ 3: on_message_wrapper(void*, mosquitto_message const*) + 0x150 (0x009299c5) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x39c5
+ 4: _mosquitto_handle_publish + 0x1dc (0x0092ba8d) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x5a8d
+ 5: _mosquitto_packet_handle + 0xc0 (0x0092b681) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x5681
+ 6: mosquitto_loop_read + 0x212 (0x0092aaf7) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x4af7
+ 7: mosquitto_loop + 0x166 (0x0092a80d) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x480d
+ 8: NubisonIF::Loop() + 0x26 (0x00929b27) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x3b27
+ 9: app_idler(void*) + 0x30 (0x00927a0d) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x1a0d
+10: (0xf77b8dd5) [/usr/lib/libecore.so.1.22.99] + 0x16dd5
+11: (0xf6daf949) [/usr/lib/libeo.so.1.22.99] + 0x11949
+12: efl_event_callback_call + 0x4a (0xf6dab1df) [/usr/lib/libeo.so.1.22.99] + 0xd1df
+13: (0xf77ba9dd) [/usr/lib/libecore.so.1.22.99] + 0x189dd
+14: (0xf77bac21) [/usr/lib/libecore.so.1.22.99] + 0x18c21
+15: (0xf77bb067) [/usr/lib/libecore.so.1.22.99] + 0x19067
+16: (0xf77be1c9) [/usr/lib/libecore.so.1.22.99] + 0x1c1c9
+17: efl_loop_begin + 0x40 (0xf77bd759) [/usr/lib/libecore.so.1.22.99] + 0x1b759
+18: ecore_main_loop_begin + 0x4c (0xf77b9ff9) [/usr/lib/libecore.so.1.22.99] + 0x17ff9
+19: appcore_base_init + 0x130 (0xf73aa985) [/usr/lib/libappcore-common.so.1.13.4] + 0x4985
+20: service_app_main_ext + 0xa6 (0xf78ce54f) [/usr/lib/libappcore-agent.so.1.2.11] + 0x154f
+21: service_app_main + 0x2a (0xf78ce663) [/usr/lib/libappcore-agent.so.1.2.11] + 0x1663
+22: main + 0x4e (0x0092825b) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x225b
+23: __libc_start_main + 0x114 (0xf75752bc) [/usr/lib/libc-2.24.so] + 0x162bc
+24: _start + 0x44 (0x00927384) [/opt/usr/globalapps/org.example.tizen-iot/bin/tizen-iot] + 0x1384
+End of Call Stack
