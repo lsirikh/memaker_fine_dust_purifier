@@ -620,7 +620,6 @@ void setup() {
   pinMode(fanDirection, OUTPUT);
   delay(50);
   digitalWrite(fanDirection,LOW);
-
   //////////initializing PWM test finish///////////////////
 
   //////////initializing button setting start//////////////
@@ -632,7 +631,6 @@ void setup() {
   initialCount=1;//variable for changing the page of OLED display during initial loading
 }  
 void loop() {  
-
 ////////////////////////////////////미세먼지 파트 시작///////////////////////////////////
   // PMS7003 센서로부터 데이터 수신하기 위한 변수 설정
   static int CheckFirst=0;
@@ -657,9 +655,7 @@ void loop() {
   PM03_10 = pms[10]<<8 | pms[11];
   PM10_25 = pms[12]<<8 | pms[13];
   PM25_ = pms[14]<<8 | pms[15]; 
-  
   }
-
 ///////////////////////////////////미세먼지 파트 끝///////////////////////////////////
   
 ////////////////////////////////택트 스위치 트리거 확인 및 처리 파트 ///////////////////  
