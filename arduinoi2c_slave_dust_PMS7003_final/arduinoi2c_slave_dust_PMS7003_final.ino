@@ -1,8 +1,14 @@
-#include <Wire.h>  
-#include <SPI.h>
-#include <SoftwareSerial.h>
-#include "U8glib.h"
-
+/* 
+ * This code was programmed by Team ME:MAKER. Many section of the code used in this program was also 
+ * from other open source communities. All codes can be modified by users who want to make a fine dust purifier 
+ * the memaker board(or arduino uno) where this code will be uploaded was intented to communicate with Tizen OS
+ * Raspberry Pi 3 B+
+ * 
+*/
+#include <Wire.h>  //Wire supports that Memaker board(arduino) is communicating with raspberry pi though i2c.
+#include <SoftwareSerial.h> //SoftwareSerial is for PMS7003 module which uses serial communication
+#include <SPI.h> //SPI support SPI type OLED display
+#include "U8glib.h" //U8glib library has many features to support displaying data on many types of OLED devices
 
 
 SoftwareSerial mySerial(2,7); // Arudino Uno port RX, TX
@@ -11,12 +17,15 @@ SoftwareSerial mySerial(2,7); // Arudino Uno port RX, TX
 // setup u8g object, please remove comment from one of the following constructor calls
 // IMPORTANT NOTE: The following list is incomplete. The complete list of supported 
 // devices with all constructor calls is here: https://github.com/olikraus/u8glib/wiki/device
+// All the information you want is here: https://github.com/olikraus/u8glib
+
 U8GLIB_SH1106_128X64 u8g(13, 11, 10, 9, 8);  // D0=13, D1=11, CS=10, DC=9, Reset=8
 
 ////////////////////////////OLED variables start/////////////////////////////////////////////
 int initialCount=1;
 int frameControl=0;
 
+//Varialbles from asset01 to asset06 are the image data for initial animation
 const unsigned char PROGMEM asset01[] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -417,61 +426,53 @@ const unsigned char PROGMEM asset06[] = {
 ////////////////////////////OLED variables finish////////////////////////////////////////////
 
 
-//아두이노 슬레이브 주소설정//
+////////////////////////////Set the address for memaker board(or ardino)/////////////////////
 #define SLAVE_ADDRESS 0x04  
-///////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
 
-////미세먼지 센서 define/////////////////////////////////////
-unsigned char pms[32]={0,};
-int PM03_10=0;
-int PM10_25=0;
-int PM25_=0;
-///////////////////////////////////////////////////////////
-
-//VARIABLES
-
-///////////////////////////////////variables for Arduino I2C /////////////////////////////
-int number = 0;  
-int send_number = 0;  
-int send_number2=100;
-//byte send_number[]={};
+///////////////////////////////////variables for Arduino I2C ///////////////////////////////
+int number = 0;  //Variable assgined for getting command code from Tizen OS(Raspberry Pi)
 int state = 0;  
+/////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////PWM Pin test////////////////////////////////////////////
-int isAuto = 1;
+///////////////////////////Define variables for PMS7003 fine dust sensor/////////////////////
+unsigned char pms[32]={0,};//Variable for getting the digitally processed data from the sensor
+int PM03_10=0;//Variable assigned for PM0.3~PM1.0 category
+int PM10_25=0;//Variable assigned for PM1.0~PM2.5 category
+int PM25_=0;  //Variable assigned for PM2.5~PM10 category
+/////////////////////////////////////////////////////////////////////////////////////////////
 
-int fanDirection=4;
-int fanPWM = 6;
-int fanSpeed=0;
-int preFanSpeed = 0;
+//////////////////////////////////PWM Pin test///////////////////////////////////////////////
+int isAuto = 1; //Variable assigned to check the auto mode for controlling the fan speed automatically
+int fanDirection=4; //fan direction
+int fanPWM = 6; //Variable to set the Pin number of the board PWM
+int fanSpeed=0; //Variable to set the value of the fan speed modified by programmed condition
+int preFanSpeed = 0; //Variable for the privious fan speed
 int checkPrev=0;
-//////////////////////////////////Tact(ile) Switch Variable////////////////////////////////
-const int chB = 3;
-const int inputB = 5;
+////////////////////////////////////////////////////////////////////////////////////////////
 
-//3개의 버튼 중에 선택된 버튼을 고르는 변수
-int selectedB=0;
-bool flag = false;
+//////////////////////////////////Tact(ile) Switch Variable/////////////////////////////////
+const int chB = 3; //Variable assigned to set the pin number for the tact switch transitioning the OLED page
+const int inputB = 5;//Variable assigned to set the pin number for the tact switch sending input signal
 
-boolean buttonState;           //현재 스위치의 상태를 정합니다.(기본 low값)
-boolean lastButtonState = LOW;
+//int selectedB=0;
+bool flag = false;//Flag variable used to check whether the button is pressed or not 
 
-unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 25;
+boolean buttonState;    //Set the current status of the switch button.(default:low)
+boolean lastButtonState = LOW; //Previous status of the button
+
+unsigned long lastDebounceTime = 0; //Variable assigned to check the last debounce time.
+unsigned long debounceDelay = 25; //The minimum period for the button to be recognized 
 bool commandFlag = true;
 unsigned long lastCheckTime= 0;
 unsigned long commandDelay = 3000;
 ///////////////////////////////////////////variable end////////////////////////////////////
-void initDraw(void) {
-  
-}
 
+////////////////////////////////////Draw OLED display start//////////////////////////////// 
 void draw(void) {
   if(initialCount< 7){
-     //총 8X8을 이용해서 64의 값이 나오고 이 값을 >>3(=> draw_state/2^3)으로 나눠서
+    //총 8X8을 이용해서 64의 값이 나오고 이 값을 >>3(=> draw_state/2^3)으로 나눠서
     //0~8사이에 메치되는 switch 문을 실행함.
-    //u8g_triangle(draw_state&7);
-    //u8g_disc_circle(draw_state&7);
     if (initialCount == 1)
       u8g.drawBitmapP( 0, 0, 16, 64, asset01);
     else if(initialCount == 2)
@@ -488,15 +489,15 @@ void draw(void) {
     
   }else{
     
-    
       if(frameControl == 0){
+        //미세먼지 입자별 농도 측정 영역
+        //자세한 내용은 레퍼런스 참고하는 것을 추천
         int textX=7;
         int textY=11;                       
         int lSpace=16;
         u8g.setFont(u8g_font_helvB10);
         u8g.drawFrame(0,textY+1,128,64-(textY+1));
         // graphic commands to redraw the complete screen should be placed here  
-        
         u8g.drawStr( textX, textY, "AIR CONDITION");
         
         //  u8g.drawStr( -10, 10, "Hello World!");
@@ -525,6 +526,8 @@ void draw(void) {
         u8g.drawStr( textX+82, textY, "ug/m3");
      
      }else if(frameControl == 1){
+        //FAN SPEED 설정 영역
+        //자세한 내용은 레퍼런스 참고하는 것을 추천
         int textX=20;
         int textY=11;
         int lSpace=16;
@@ -564,7 +567,8 @@ void draw(void) {
           u8g.drawFrame(textX+(xSpace*j),textY,7,11);
         }
      }else if(frameControl == 2){
-        //자동화(isAuto) 설정을 위한 영역를
+        //자동화(isAuto) 설정을 위한 영역
+        //자세한 내용은 레퍼런스 참고하는 것을 추천
         int textX=20;
         int textY=11;
         int lSpace=16;
@@ -585,27 +589,22 @@ void draw(void) {
         
      }
   }
-  
-  
 }
 
-
+////////////////////////////////////Draw OLED display finish//////////////////////////////// 
 
 void setup() {  
+  //////////////setup for Serial monitor start/////////////
+  Serial.begin(19200);
+  Serial.println("Serial monitor is ready.......");
+  //////////////setup for Serial monitor finish////////////
   
-  //테스트용 LED 13번 설정
-  //pinMode(13, OUTPUT);  
-   Serial.begin(19200);
-   Serial.println("Serial monitor is ready.......");
   ///////////setup for micro dust sensor start/////////////
   // Use software serial
   mySerial.begin(9600);
   for(int i=0;i<32;i++){
     pms[i]=0;
   }
-  
-  
-  //Serial.println("OF Fine-Dusttest");
   ///////////setup for micro dust sensor finish/////////////
   
   ///////////initialize i2c as slave////////////////////////  
@@ -613,7 +612,6 @@ void setup() {
   // define callbacks for i2c communication  
   Wire.onReceive(receiveData);  
   Wire.onRequest(sendData);  
-  //Serial.println("I2C Communication setup is Ready!");  
   //////////initializing communication finish//////////////
 
   //////////initializing PWM test start////////////////////
@@ -631,7 +629,7 @@ void setup() {
   flag = false;
   ///////////initializing button setting finish////////////
 
-  initialCount=1;
+  initialCount=1;//variable for changing the page of OLED display during initial loading
 }  
 void loop() {  
 
@@ -664,7 +662,7 @@ void loop() {
 
 ///////////////////////////////////미세먼지 파트 끝///////////////////////////////////
   
-//////////////////////////////////택트 스위치 트리거 확인 및 처리 파트 ///////////////////  
+////////////////////////////////택트 스위치 트리거 확인 및 처리 파트 ///////////////////  
   int reading; //digitalRead 값 확인용 변수
   int sel=0; //2개의 버튼 중 1개를 찾는 변수
   
@@ -677,19 +675,21 @@ void loop() {
     sel=2;
   }
 
-  //Software적 chattering 해결 코드
+  //Software 방식으로 tact swith의 chattering(디바운싱) 해결 코드
   if (reading != lastButtonState){  //스위치의 이전과 지금 상태가 다르면
     lastDebounceTime = millis();   //초를 기록합니다.
     //택트 스위치 모드일 때 활용되는 PULL UP 변수
     flag = true;
   }
 
-  //
+  //Tact Swith를 처음 누른 시간의 간격이 25ms 이상이 되면 누른 상태를 인식하도록 구현
   if ((millis() - lastDebounceTime) > debounceDelay){//초가 기록되는 차이가 25ms보다 크면
     //25ms이상일 때, 해당 코드로 진입
-    //flag를 통해 첫 PULL UP 상태를 확인 
+    //flag를 통해 첫 PULL UP 상태를 확인및 명령 전달 1회로 제한
     if(flag){
       //누른 버튼에 따른 동작 코드
+      //화면 전환 버튼은 sel=1이고, 이 버튼을 누르면
+      //frameControl 전역변수를 변화시키면서, 세팅된 OLED화면을 바꿔주게 됨
       if(sel == 1){
         Serial.println("Frame Control button was hit");
         frameControl++;
@@ -699,6 +699,8 @@ void loop() {
           frameControl=0;
         }
       }else if(sel == 2){
+        //input을 주는 버튼으로 sel=2이고, 좀 더 많은 기능을 함
+        //frameControl 값이 1이고, 동시에 MANUAL 모드 일 경우 팬의 속도를 증가시키게됨.
         Serial.println("Function Control button was hit");
         if(frameControl==1 && !isAuto){
           fanSpeed +=50;
@@ -713,36 +715,55 @@ void loop() {
           Serial.println(isAuto);
         }
       }
-      flag=false;
+      flag=false; //Tact switch로 명령을 전달하는 과정을 끝냈으므로, flag를 false로 전환하여
+                  //중복명령과정을 제한함
     }
 
+    //reading값과 buttonState를 비교하여, 다르면 현재 reading값을 buttonState에 넣어줌
     if (reading != buttonState){
       buttonState = reading;  //스위치를 누른 값과 다르면 대입합니다.
     }
   }
-  /////////////////////////////
-  lastButtonState = reading;
-  
+  lastButtonState = reading; // 마지막 버튼상태를 reading의 값으로 저장함
+  /////////////////////////////////////////////////////////////////////////////////////
   
   if(commandFlag){
-    lastCheckTime = millis();
-    commandFlag=false;
+    //commandFlag가 처음에 true로 진입을 하면 약 3초간 AUTO mode 커멘드를
+    //보내지 않기 위해서 즉, 3초 간격으로 팬의 속도 변화량을 입력하도록 함.
+    lastCheckTime = millis(); //commandFlag가 들어온 값을 기반으로 첫 시작 시점 저장
+    commandFlag=false; //3초 간격이 끝나기 전까지 이 조건문으로 들어오지 못하도록 commadFlag false 설정
   }
+
+  //만약 Auto 모드가 아니면 fan 속도를 바꾼 내용이 즉각적으로 반영될 수 있도록 조건문 구성
+  //코드가 이렇게 구성된 이유는 소프트웨어적인 이유가 아니라 하드웨어적인 이슈가 있어서 이렇게 구성
+  //AUTO 모드의 경우 약 0.5초 ~ 1초 사이로 갱신되는 PMS7003 미세먼지 수치의 변화가 FAN의 속도를 변화시키는
+  //구간에서 지속적으로 변동이 되거나 급작스럽게 많은 변화가 생길 때, 빠르게 변경되는 PWM의 펄스값을 모터 드라이버
+  //또는, 모터가 따라잡지 못하면서 동기화(?)적 오류가 발생하는 것으로 추정됨.
+  //따라서 AUTO모드와 MANUAL 모드에 따라 작동하는 방식에 차이를 만들었음. 
   if(!isAuto){
     //MANUAL MODE fan control
-     checkFanSpeed(fanSpeed);
+    //MANUAL MODE의 경우 fan control을 실시간으로 바꿀 수 있도록 함.
+     checkFanSpeed(fanSpeed); //fanSpeed의 값에 따라 checkFanSpeed에서 팬의 속도를 변화시키도록 함.
   }
+
+  //AUTO 모드일 경우, FAN 속도에 명령을 주는 구간
+  //3초의 시간 간격을 통해 실행이 될 수 있도록 함.
+  //delay(3000);명령을 쓰지 않는 이유는 SW가 계속 다른 처리를 해야할 필요가 있기 때문.
+  //ex)OLED 표시, PMS7003 데이터 수신, Raspberry Pi3 데이터 송수신 등
   if((millis() - lastCheckTime) > commandDelay){
-     
-    Serial.println("PWM commanded"); 
+    Serial.println("INPUT command to change PWM"); 
     
+    //이 코드가 실행되는 이유는 isAuto가 true일 때 즉, AUTO MODE 일 때 만 적용되기 때문에
+    //해당 조건을 통해서 작동하도록 구현
     if(isAuto){
       //AUTO MODE fan control//
       Serial.println("AUTO is ON");
       //기준설정을 위한 3가지 미세먼지 입자영역 평균
-      int avrAirCond = (int)((PM03_10+PM10_25+PM25_)/3);
+      //avrAirCond의 값은 AUTO 모드일 경우에만 의미를 지님
+      int avrAirCond = (int)((PM03_10+PM10_25+PM25_)/3); //3가지 입자 구간의 평균을 산정
       Serial.print("Air condition:");
       Serial.println(avrAirCond);
+      //구간에 따라 fanSpeed 전역변수 값을 할당함
       if(avrAirCond<=25){
         fanSpeed=0;
       }else if(avrAirCond>25&&avrAirCond<40){
@@ -756,60 +777,64 @@ void loop() {
       }else if(avrAirCond>=70){
         fanSpeed=250;
       }
-      
+      //할당된 fanSpeed 값을 이용해서 checkFanSpeed 함수로 전달
       checkFanSpeed(fanSpeed);
     }else{
       Serial.println("AUTO is OFF");
     }
+    //다시 commandFlag를 true로 전환하여 3초를 측정하기 위한 시점을 잡을 수 있도록 함
     commandFlag =true;
-   
   }
-  
 
   // picture loop
+  // 이 함수는 U8glib라는 라이브러리를 활용한 함수로 라이브러리에서 제공하는 규칙을 정확하게 따라야함
+  // 참고: https://github.com/olikraus/u8glib
+  // wiki: https://github.com/olikraus/u8glib/wiki
+  // u8g.firstPage()는 그림을 그리는 loop를 개별적으로 돌리는 데 그 루프의 시작점을 나타냄
+  // 따라서 이러한 루프와 draw()함수를 쓰는 구간은 복수개로 만들면 정상작동을 안함
+  // 자세한 내용은 링크 참조
   u8g.firstPage();  
   do {
       draw();
   } while(u8g.nextPage());
   
   // rebuild the picture after some delay
+  // u8g.firstPage에서 OLED로 그림을 그리는 작업 즉 OLED 화면을 표현하는 일을 시키고, 처음에 
+  // 미메이커보드(아두이노보드)의 전원을 켰을 때, 아래의 Initial Loading화면을 제공하기 위해서
+  // 다음과 같은 조건을 초기에만 실행하고, 그 이후 OLED 그림을 그리는 데 필요한 약 50ms정도의 시간을
+  // 주면서 전체 OLED 그림을 그리는 동작에 지연을 설정함.
   if(initialCount<7){
     initialCount++;
     delay(500);
   }else{
     delay(50);
   }
-  
 }  
 
-
-
-
-// callback for received data  
+// callback for received data 
+// 라즈베리파이로 부터 받은 I2C 통신 명령을 확인하는 함수
 void receiveData(int byteCount) {  
   int value=0;
+  //I2C로 부터 받은 데이터가 있으면, 확인
   while (Wire.available()) {
     //명령코드 수행  
-    
+    //byte단위의 데이터가 오기 때문에 낮은 숫자는 별도의 컨버팅 작업없이 쓸 수 있음
+    //0000000-1111111(10진수로 128개 정도)단위를 활용할 수 있음
     number = Wire.read();  
     value=Wire.read();
     Serial.print("data received: ");  
     Serial.println(number);  
     Serial.print("data received: ");  
     Serial.println(value);  
+    //number가 4이면 AUTO 모드 ON/OFF하는 명령코드가 됨
+    //이 명령코드는 NUBISON에서 원격으로 데이터 콘트롤하는 부분과 서로 프로토콜을 맞춰줌
+    //사전에 타이젠 코드에서 조건에 맞춰서 명령코드를 설정
     if (number == 4) {  
       isAuto=value;
-//      if (state == 0) {  
-//        //digitalWrite(13, HIGH); // set the LED on  
-//        state = 1;  
-//      }  
-//      else {  
-//        //digitalWrite(13, LOW); // set the LED off  
-//        state = 0;  
-//      }
-      
     }else if(number ==3){
-      
+      //number가 3이면, FAN의 속도를 변화시켜주는 명령으로, value값에 따라 fanSpeed가 바뀜
+      //fanSpeed를 변경하는 명령이 오기 위해서는 타이젠에서 받은 데이터를 통해 현재 이 보드가 
+      //MANUAL 모드라는 것을 인식했을 때만 보낼 수 있도록 프로토콜 설정
       if(value == 0){
         fanSpeed = 0;
       }else if(value ==1){
@@ -824,20 +849,13 @@ void receiveData(int byteCount) {
         fanSpeed = 250;
       }
     }
-////////명령 프로토콜 재설계//////////////////////////////////
-//    else if(number == 2){
-//      //Nubison이나 클라우드 프로그램에서 콘트롤할 경우에 해당
-//      fanSpeed +=10;
-//    }else if(number == 3){
-//      //Nubison이나 클라우드 프로그램에서 콘트롤할 경우에 해당
-//      fanSpeed -=10;
-//    }
-//////////////////////////////////////////////////////////  
   }  
 }  
 //callback for sending data  
+//미메이커보드(아두이노보드)에서 I2C를 통해서 타이젠으로 데이터를 송신하는 함수
 void sendData() {
-  //줄바꿈이 시간 딜레이를 만드는 듯
+  //int형태의 데이터 타입을 byte타입의 Low와 High로 쪼개서 송신하고
+  //수신하는 타이젠측에서 두 데이터를 합성하여 int로 다시 활용하게 됨
   Wire.write(lowByte(PM03_10)); // data 전송
   Wire.write(highByte(PM03_10)); // data 전송
   Wire.write(lowByte(PM10_25)); // data 전송
@@ -850,32 +868,10 @@ void sendData() {
   Wire.write(highByte(isAuto)); // data 전송
 }  
 
-//The function for motor speed contorl as Accel and Decel
+//Function to change the fan speed with acceleration and deceleration
+//서서히 팬 속도를 변화시켜 원하는 속도까지 도달할 수 있는 코드를 추가시킨
+//팬 속도 변화 함수
 void checkFanSpeed(int speed){
-//  if(!isAuto){
-//    
-//    if(preFanSpeed != speed){
-//      Serial.println("checkFanSpeed(MANUAL)");
-//      Serial.println(speed);
-//      if (speed == 0){
-//        for(int fan=preFanSpeed;fan>0;fan--){
-//              analogWrite(fanPWM,fan);
-//              delay(2);
-//        }
-//      }else{
-//        for(int fan=preFanSpeed;fan<speed;fan++){
-//              analogWrite(fanPWM,fan);
-//              delay(3);
-//        }
-//      }
-//      preFanSpeed = speed;
-//    }
-//  }else{
-//    Serial.println("checkFanSpeed(AUTO)");
-//    Serial.println(speed);
-//    analogWrite(fanPWM,speed);
-//  }
-
 
   if(preFanSpeed != speed){
      Serial.println(preFanSpeed);
