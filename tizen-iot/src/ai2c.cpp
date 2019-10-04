@@ -119,7 +119,6 @@ void NubisonCB_Invoke(char* rdata, char* api, char* uniqkey)
 
 	int ret = 0;
 
-
 	int sensor_number = 0; //sensor_number는 명령이 들어오는 값에 따라 get_value를 구분하게 된다.
 	int get_value = 0;//get_value는 누비슨 앱에서 보내는 데이터의 값이 개별적으로 달라진다.
 	//sensor_number == 3 인 경우 ,팬 속도 정보
