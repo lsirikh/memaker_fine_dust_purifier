@@ -4,11 +4,11 @@
 <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"></SignatureMethod>
 <Reference URI="author-signature.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>T9iWKpw2tqko6SK1s1hb1xg7pQwRvFyU931d2K4svSs=</DigestValue>
+<DigestValue>9EMaF2DtFvd3jS8CVsM2ABEfo89tBd99/ut8MZiPSws=</DigestValue>
 </Reference>
 <Reference URI="bin%2Ftizen-iot">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>DgZlJYlaYWIumSUgcejHeHukD6vIX8LTTY8xjHJ1Auk=</DigestValue>
+<DigestValue>LCl8AqBDEJKeiQmp9YLTIOqxe4ZV8Ix5DSvUTqYUvMM=</DigestValue>
 </Reference>
 <Reference URI="lib%2Flibnubioniotif.a">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -20,7 +20,7 @@
 </Reference>
 <Reference URI="tizen-manifest.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>EE9uz2FdAM1smimBCrwtIt6TYyf0ZXtSh/SNEmJCWmc=</DigestValue>
+<DigestValue>8dNEK+jIqgdNfcG4oulolU3BJas/jsMKRjTTVPNCjNI=</DigestValue>
 </Reference>
 <Reference URI="#prop">
 <Transforms>
@@ -31,9 +31,9 @@
 </Reference>
 </SignedInfo>
 <SignatureValue>
-lwAJXqqdQyYizrD9s9waRYaEF68PmAPBV8rXU+UpbhVm6dUX0JbzC8eBMRAPqiaXKwxdJQCigsTa
-SV1ab15Srd1VBJvOu+XGPyDZCpw3X5FGfFxbloFyeIlTKnkFcxF3eZhJV5pzkCzwP/AYGDM9hXXC
-Ko9K1CZW0s7yQ/RDooI=
+iWmlMw1doeAyiaTKjAql6qkx98ZYVBN37yaEDHBgddRZpeZ9zDZPXis8reVQZv1vmLEoYemEf6/8
+kHl4+6uq1erO7K9xoCKTvehFBHXvw5q+5wcfqJDDkJNbvXEdp3jAPuQpgYYrtIH6mX3NwCCoS455
+p6HXhya3s82qwAu4E8I=
 </SignatureValue>
 <KeyInfo>
 <X509Data>

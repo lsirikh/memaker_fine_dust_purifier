@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright (c) 2019 Sim Platform Co., Ltd. All Rights Reserved
+ * Copyright (c) 2019 TEAM MEMAKER. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
  *
  ******************************************************************/
 
+
+
 #ifndef __LOG_H__
 #define  __LOG_H__
 
@@ -28,7 +30,12 @@ extern "C" {
 #ifdef LOG_TAG
 #undef LOG_TAG
 #endif
-#define LOG_TAG "NUBISON"
+#define LOG_TAG "MEMAKER"
+// <IMPORTANT> To check the communication with arduino and tizen app,
+//             Please wait for over 10secs </IMPORTANT>
+
+
+
 
 #define ERR(fmt, args...) dlog_print(DLOG_ERROR, LOG_TAG, "%s : %s(%d) > " fmt" \n", rindex(__FILE__, '/') + 1, __func__, __LINE__, ##args)
 #define WARN(fmt, args...) dlog_print(DLOG_WARN, LOG_TAG, "%s : %s(%d) > " fmt" \n", rindex(__FILE__, '/') + 1, __func__, __LINE__, ##args)
@@ -39,7 +46,6 @@ extern "C" {
 #define FN_END dlog_print(DLOG_DEBUG, LOG_TAG, "<<<<<<<< ended")
 
 
-////////////////////////////////
 #if !defined(_D)
 #define _D(fmt, arg...) dlog_print(DLOG_DEBUG, LOG_TAG, "[%s:%d] " fmt "\n", __func__, __LINE__, ##arg)
 #endif
@@ -68,12 +74,6 @@ extern "C" {
 	} \
 } while (0)
 
-//#define retv_if(expr, val) do { \
-//	if (expr) { \
-//		_E("(%s) -> %s() return", #expr, __FUNCTION__); \
-//		return (val); \
-//	} \
-//} while (0)
 
 #define retm_if(expr, fmt, arg...) do { \
 	if (expr) { \
@@ -83,12 +83,6 @@ extern "C" {
 	} \
 } while (0)
 
-//#define ret_if(expr) do { \
-//	if (expr) { \
-//		_E("(%s) -> %s() return", #expr, __FUNCTION__); \
-//		return; \
-//	} \
-//} while (0)
 
 #define goto_if(expr, val) do { \
 	if (expr) { \
@@ -110,7 +104,6 @@ extern "C" {
 		continue; \
 	} \
 }
-//////////////////////////////////////////
 
 #define retv_if(expr, val) do { \
     if(expr) { \

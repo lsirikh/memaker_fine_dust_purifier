@@ -1,6 +1,6 @@
 /*****************************************************************
  *
- * Copyright (c) 2019 Sim Platform Co., Ltd. All Rights Reserved
+ * Copyright (c) 2019 TEAM MEMAKER. All Rights Reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
  *
  ******************************************************************/
 
-//기존의 누비슨 예제 파일을 활용하여 구성함.
+//기존의 Nubison 예제 파일을 활용하여 구성함.
+//미메이커 미세먼지 공기청정기 프로젝트를 위해 수정 및 추가 작업을 진행함.
 
 #include <tizen.h>
 #include <service_app.h>
@@ -26,7 +27,7 @@
 #include <Ecore.h>
 #include <unistd.h>
 
-//누비슨 예제파일은 C++기반으로 작성되어 C로 작성된 헤더파일 extern 변환하여 include
+//Nubison 예제파일은 C++기반으로 작성되어 C로 작성된 헤더파일 extern 변환하여 include
 extern "C" {
 	//Thingspark 헤더파일
 	#include <thingspark.h>
@@ -46,25 +47,23 @@ extern "C" {
 
 #define BUFSIZE 32
 
-// 누비슨 클라우드에서 발급하는 인식키
+// Nubison 클라우드에서 발급하는 인식키
 // 연결장치의 제품 식별키를 입력하기
 char mytoken[32] = "5690-8e0v-1357-7V85";//이번 해커톤에 활용가능한 API KEY : team17@tizen.org계정
+										 //해당 계정은 해커톤 이후에 삭제 될 예정
 
 // Nubison IoT 클라우드 서비스 주소(테스트서버 주소)
 char cloudifaddress[64] = "nubisoniot.com";
 
-// 클라우드 접속 포트 번
+// 클라우드 접속 포트 번호
 int  cloudifport = 1883;
 
 //Nubison IoT 연계 모듈 클래스 인스턴스
 static NubisonIF *cloudif = NULL;
 
-static int led0 = 0;
-static int led1 = 1;
 
-
-
-////////////////// 아두이노 I2C 통신 포트 설정//////////////
+////////////////// 아두이노 I2C 통신 버스 설정//////////////
+//////////////라즈베리파이에는 버스가 하나 존재/////////////
 #define I2C_BUS_NUMBER (1)
 ////////////////// 아두이노와 I2C 통신 인터벌 설정//////////
 #define ARDUINO_GATHER_INTERVAL (0.7f)
@@ -95,23 +94,22 @@ int value[] = {0,0,0,0,0};//variables for data from arduino with I2C
 
 // Nubison Cloud과 통신하는 콜백 함수
 //1.Device 의 상태를 조회하는 콜백
-//수정하지 않음
+//미메이커 공기청정기 프로젝트에서 활용하지 않았음
 void NubisonCB_Query(char* rdata, char* api, char* uniqkey)
 {
-	DBG("QueryCB : %s %s %s", rdata, api, uniqkey);
+	//DBG("QueryCB : %s %s %s", rdata, api, uniqkey);
 
 	// sendData를 String 자료형 변수로 저장하여 보내주세요.
-	char tmp[BUFSIZE] = {0, };
-	sprintf(tmp, "%d:%d", led0, led1);
+	//char tmp[BUFSIZE] = {0, };
+	//sprintf(tmp, "%d:%d", led0, led1);
 
 	// 클라우드에서 조회 요청이 왔을때 관련된내용을 담아서 전달 함
 	// 관련해서 정확히 DB에 Unit 별로 들어 게 하는 것은 클라우드 서버에서 Driver로 셋팅함
-	cloudif->SendtoCloud(tmp, TYPE_STRING, api, uniqkey);
+	//cloudif->SendtoCloud(tmp, TYPE_STRING, api, uniqkey);
 }
 
 //2.Device 의 제어 하는 콜백
 //누비슨 앱을 활용하여 명령 데이터를 보내기 위해서 활용된 함수
-//변경자:이기호
 void NubisonCB_Invoke(char* rdata, char* api, char* uniqkey)
 {
 	DBG("InvokeCB : %s %s %s", rdata, api, uniqkey);
@@ -233,8 +231,7 @@ void NubisonCB_AUTHO(int authocode)
 	}
 }
 
-//사용자에 의해 수정됨
-//변경자 : 이기호
+//본 프로젝트를 위해 사용자에 의해 편집됨
 Eina_Bool app_idler(void *data)
 {
 	NubisonIF *nubif = (NubisonIF * )data;
@@ -245,15 +242,14 @@ Eina_Bool app_idler(void *data)
 	}
 	//value 배열에 저장된 Arduino로 부터 수신된 센서와 기타 데이터 값을 누비슨 클라우드로 송신함
 	//송신 프로토콜은 순서대로 값:값:값:값:값 의 형태를 취함
-	sprintf(tmp, "%d:%d:%d:%d:%d:%d", value[0], value[1], value[2], value[3], value[4]);
+	sprintf(tmp, "%d:%d:%d:%d:%d", value[0], value[1], value[2], value[3], value[4]);
 	nubif->NotitoCloud(tmp, TYPE_STRING, mytoken, 1);
 
 
     return ECORE_CALLBACK_RENEW;
 }
 
-//thingspark에서 활용되는 함수
-//변경자 : 이기호
+//thingspark에서 활용되는 함수 본 프로젝트 활용을 위해 편집됨
 Eina_Bool _get_sensor_value(void *data) {
 
 	int ret = 0;
@@ -300,9 +296,8 @@ Eina_Bool _get_sensor_value(void *data) {
 	return ECORE_CALLBACK_RENEW;
 }
 
-/////////////////////////아두이노 I2C통신 관련 함수부 시작////////
+/////////////////////////아두이노 I2C통신 관련 함수부 시작//////////////////////////////
 //I2C로 통신하는 아두이노 호출하는 callback함수
-//변경자 : 이기호
 static Eina_Bool __get_arduino_cb(void *data)
 {
 	int ret = 0;
@@ -316,7 +311,6 @@ static Eina_Bool __get_arduino_cb(void *data)
 	return ECORE_CALLBACK_RENEW;
 }
 
-//변경자 : 이기호
 void gathering_stop(void *data)
 {
 	app_data *ad = (app_data *)data;
@@ -330,7 +324,6 @@ void gathering_stop(void *data)
 }
 
 
-//변경자 : 이기호
 void gathering_start(void *data)
 {
 	app_data *ad = (app_data *)data;
@@ -346,9 +339,7 @@ void gathering_start(void *data)
 		_E("Failed to add getter_arduino");
 }
 
-/////////////////////////아두이노 I2C통신 관련 함수부 종료////////
-
-
+/////////////////////////아두이노 I2C통신 관련 함수부 종료////////////////////////////////
 
 
 
@@ -396,7 +387,6 @@ static void service_app_control(app_control_h app_control, void *user_data)
 		gathering_start(user_data);
 }
 
-//변경자 : 이기호
 int main(int argc, char *argv[])
 {
 	//C++맞게 app_data casting
