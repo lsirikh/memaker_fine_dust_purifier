@@ -49,7 +49,7 @@ extern "C" {
 
 // Nubison 클라우드에서 발급하는 인식키
 // 연결장치의 제품 식별키를 입력하기
-char mytoken[32] = "5690-8e0v-1357-7V85";//이번 해커톤에 활용가능한 API KEY : team17@tizen.org계정
+char mytoken[32] = "####-####-####-####";//이번 해커톤에 활용가능한 API KEY : team17@tizen.org계정
 										 //해당 계정은 해커톤 이후에 삭제 될 예정
 
 // Nubison IoT 클라우드 서비스 주소(테스트서버 주소)
@@ -87,7 +87,7 @@ static app_data *g_ad = NULL;
 //value[2] PM2.5+의 미세먼지 센서 값
 //value[3] Fan Speed의 단계
 //value[4] AUTO 모드 여부
-int value[] = {0,0,0,0,0};//variables for data from arduino with I2C
+uint16_t value[] = {0,0,0,0,0};//variables for data from arduino with I2C
 
 
 
@@ -134,7 +134,7 @@ void NubisonCB_Invoke(char* rdata, char* api, char* uniqkey)
 	//해당 경우 get_value ==1 은 AUTO(자동)
 
 	//누비슨으로 부터 받은 데이터를 valueSet 배열에 저장 한 후, resource_write_arduino로 송신할 떄 활용
-	int valueSet[2]={0,0};
+	uint8_t valueSet[2]={0,0};
 
 	strncpy(tmp, rdata, BUFSIZE);
 
@@ -160,19 +160,7 @@ void NubisonCB_Invoke(char* rdata, char* api, char* uniqkey)
 		valueSet[0]=sensor_number;
 		_D("===========FAN SPEED INPUT===========");
 		if(value[4]==0){
-			if(get_value==0){
-				valueSet[1]=get_value;
-			}else if(get_value==1){
-				valueSet[1]=get_value;
-			}else if(get_value==2){
-				valueSet[1]=get_value;
-			}else if(get_value==3){
-				valueSet[1]=get_value;
-			}else if(get_value==4){
-				valueSet[1]=get_value;
-			}else if(get_value==5){
-				valueSet[1]=get_value;
-			}
+			valueSet[1]=get_value;
 			_D("===========FAN SPEED : %d===========", get_value);
 		}else{
 			_D("Auto Mode is ON");
@@ -256,7 +244,7 @@ Eina_Bool _get_sensor_value(void *data) {
 
 	// TODO API_KEY 변경
 	// thingspark.kr 에서 채널별로 부여되는 api-key를 입력합니다.
-	ret = tp_initialize("fgbOyZZcKG9RObgn", &handle);
+	ret = tp_initialize("#############", &handle);
 	retv_if(ret != 0, -1);
 
 
@@ -333,7 +321,7 @@ void gathering_start(void *data)
 
 	//ecore_timer를 이용한 주기적인 정보획득 API등록
 	ad->getter_arduino = ecore_timer_add(ARDUINO_GATHER_INTERVAL, __get_arduino_cb, NULL);
-	_D("1, ad->getter_arduino = %d", ad->getter_arduino);
+	_D("1, ad->getter_arduino = %p", ad->getter_arduino);
 	if (!ad->getter_arduino)
 		_E("Failed to add getter_arduino");
 }
@@ -361,9 +349,10 @@ static bool service_app_create(void *user_data)
 	ecore_idler_add(app_idler, cloudif);
 
 	//ecore timer 등록으로 thingspark 연결 가능할 경우 통신
-		timer = ecore_timer_add(30.0f, _get_sensor_value, NULL);
-			if (!timer)
-				_E("cannot add a timer(%s)", "Cannot register ecore timer for thingspark data transmission");
+	timer = ecore_timer_add(30.0f, _get_sensor_value, NULL);
+	if (!timer){
+		_E("cannot add a timer(%s)", "Cannot register ecore timer for thingspark data transmission");
+	}
 
 	return true;
 }
@@ -383,7 +372,7 @@ static void service_app_terminate(void *user_data)
 static void service_app_control(app_control_h app_control, void *user_data)
 {
 	_D("control");
-		gathering_start(user_data);
+	gathering_start(user_data);
 }
 
 int main(int argc, char *argv[])
