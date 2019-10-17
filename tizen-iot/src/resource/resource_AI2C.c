@@ -52,12 +52,9 @@ int resource_read_arduino(int i2c_bus, uint16_t *out_value)
 {
 	int ret = PERIPHERAL_ERROR_NONE;
 
-	//write variable used for verifying resource_ai2c_s.opened
-	static int write = 0;
 
 	//아두이노로 부터 수신한 데이터를 저장하는 버퍼
 	uint8_t buf[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};//read data buffer
-	//uint32_t length = 10; //buffer byte length
 
 
 	static int count = 0;
@@ -70,15 +67,13 @@ int resource_read_arduino(int i2c_bus, uint16_t *out_value)
 			return -1;
 		}
 		resource_ai2c_s.opened = 1;
-		write = 0;
 	}
-	if (!write) {
-		ret = peripheral_i2c_read(resource_ai2c_s.pin_h, buf, READ_BUFFER);
-		_D("5, ret(peripheral_i2c_read)=%d", ret);
-		if (ret != PERIPHERAL_ERROR_NONE) {
-			_E("i2c read error : %s", get_error_message(ret));
-			return -1;
-		}
+
+	ret = peripheral_i2c_read(resource_ai2c_s.pin_h, buf, READ_BUFFER);
+	_D("5, ret(peripheral_i2c_read)=%d", ret);
+	if (ret != PERIPHERAL_ERROR_NONE) {
+		_E("i2c read error : %s", get_error_message(ret));
+		return -1;
 	}
 	_D("READ : 0x%2X, 0x%2X, 0x%2X, 0x%2X, 0x%2X, 0x%2X, 0x%2X, 0x%2X, 0x%2X, 0x%2X, count : %d", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8], buf[9], count++);
 
@@ -105,11 +100,8 @@ int resource_write_arduino(int i2c_bus, uint8_t *input_value)
 {
 	int ret = PERIPHERAL_ERROR_NONE;
 
-	//write variable used for verifying resource_ai2c_s.opened
-	static int write = 0;
 
 	uint8_t cbuf[] = { 0x00, 0x00, 0x00, 0x00 };//command buffer
-	//uint32_t length = 2; //buffer byte length
 
 
 	if (!resource_ai2c_s.opened) {
@@ -120,20 +112,18 @@ int resource_write_arduino(int i2c_bus, uint8_t *input_value)
 			return -1;
 		}
 		resource_ai2c_s.opened = 1;
-		write = 0;
 	}
 
 	//2개의 cbuf만 활용하여 데이터 저장
 	cbuf[0] = (uint8_t)input_value[0];//set commnand for number in arduino
 	cbuf[1] = (uint8_t)input_value[1];//set commnand for value in arduino
 	_D("input_value[0], input_value[1] : %d, %d", input_value[0], input_value[1]);
-	if (!write) {
-		ret = peripheral_i2c_write(resource_ai2c_s.pin_h, cbuf, WRITE_BUFFER);
-		_D("4, ret(peripheral_i2c_write)=%d", ret);
-		if (ret != PERIPHERAL_ERROR_NONE) {
-			_E("i2c write error : %s", get_error_message(ret));
-			return -1;
-		}
+
+	ret = peripheral_i2c_write(resource_ai2c_s.pin_h, cbuf, WRITE_BUFFER);
+	_D("4, ret(peripheral_i2c_write)=%d", ret);
+	if (ret != PERIPHERAL_ERROR_NONE) {
+		_E("i2c write error : %s", get_error_message(ret));
+		return -1;
 	}
 
 	return 0;

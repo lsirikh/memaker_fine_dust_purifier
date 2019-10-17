@@ -49,7 +49,7 @@ extern "C" {
 
 // Nubison 클라우드에서 발급하는 인식키
 // 연결장치의 제품 식별키를 입력하기
-char mytoken[32] = "####-####-####-####";//이번 해커톤에 활용가능한 API KEY : team17@tizen.org계정
+char mytoken[32] = "5690-8e0v-1357-7V85";//이번 해커톤에 활용가능한 API KEY : team17@tizen.org계정
 										 //해당 계정은 해커톤 이후에 삭제 될 예정
 
 // Nubison IoT 클라우드 서비스 주소(테스트서버 주소)
@@ -77,8 +77,6 @@ typedef struct app_data_s {
 Ecore_Timer *timer = NULL;
 
 
-// app_data를 활용하여 app간 호출 시 참조 변수 활용
-static app_data *g_ad = NULL;
 
 //*이번 프로젝트에 가장 중요한 값들이 들어오는 전역 변수*
 //각각 변수는 다음과 같은 의미를 갖게 된다.
@@ -244,7 +242,7 @@ Eina_Bool _get_sensor_value(void *data) {
 
 	// TODO API_KEY 변경
 	// thingspark.kr 에서 채널별로 부여되는 api-key를 입력합니다.
-	ret = tp_initialize("#############", &handle);
+	ret = tp_initialize("fgbOyZZcKG9RObgn", &handle);
 	retv_if(ret != 0, -1);
 
 
@@ -280,7 +278,7 @@ Eina_Bool _get_sensor_value(void *data) {
 	ret = tp_finalize(handle);
 	retv_if(ret != 0, -1);
 
-	return ECORE_CALLBACK_RENEW;
+	return ECORE_CALLBACK_CANCEL;
 }
 
 /////////////////////////아두이노 I2C통신 관련 함수부 시작//////////////////////////////
@@ -351,7 +349,7 @@ static bool service_app_create(void *user_data)
 	//ecore timer 등록으로 thingspark 연결 가능할 경우 통신
 	timer = ecore_timer_add(30.0f, _get_sensor_value, NULL);
 	if (!timer){
-		_E("cannot add a timer(%s)", "Cannot register ecore timer for thingspark data transmission");
+		_E("cannot add a timer \"Cannot register ecore timer for thingspark data transmission\"");
 	}
 
 	return true;
@@ -381,8 +379,8 @@ int main(int argc, char *argv[])
 	app_data *ad = NULL;
 	service_app_lifecycle_callback_s event_callback;
 	ad = (app_data *)calloc(1, sizeof(app_data));
+	retv_if(!ad, -1);
 
-	g_ad = ad;
 	event_callback.create = service_app_create;
 	event_callback.terminate = service_app_terminate;
 	event_callback.app_control = service_app_control;
