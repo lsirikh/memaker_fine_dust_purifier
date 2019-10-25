@@ -266,7 +266,7 @@ Eina_Bool _get_sensor_value(void *data) {
 	return ECORE_CALLBACK_RENEW;
 ERROR:
 	//tp_set_value에서 에러가 발생할 경우 handle할당여부 확인후 해제
-	if(handle){
+	if(handle != NULL){
 		ret = tp_finalize(handle);
 		retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 	}
