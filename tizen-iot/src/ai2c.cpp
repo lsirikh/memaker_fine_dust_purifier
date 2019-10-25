@@ -228,7 +228,7 @@ Eina_Bool _get_sensor_value(void *data) {
 	// TODO API_KEY 변경
 	// thingspark.kr 에서 채널별로 부여되는 api-key를 입력합니다.
 	// api-key : ################
-	ret = tp_initialize("4CVzs3shW9hZTEXh", &handle);
+	ret = tp_initialize("################", &handle);
 	retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 
 	//thingspark에서 활용되는 부분으로 각 변수는 센서의 값을 저장하도록 함
