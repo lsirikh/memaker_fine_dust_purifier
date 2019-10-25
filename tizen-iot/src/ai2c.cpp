@@ -228,7 +228,7 @@ Eina_Bool _get_sensor_value(void *data) {
 	// TODO API_KEY 변경
 	// thingspark.kr 에서 채널별로 부여되는 api-key를 입력합니다.
 	// api-key : ################
-	ret = tp_initialize("################", &handle);
+	ret = tp_initialize("4CVzs3shW9hZTEXh", &handle);
 	retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 
 	//thingspark에서 활용되는 부분으로 각 변수는 센서의 값을 저장하도록 함
@@ -246,23 +246,32 @@ Eina_Bool _get_sensor_value(void *data) {
 
 	//각 데이터를 핸들을 활용하여 각 입력 순서 지정후 ret확인
 	ret = tp_set_field_value(handle, 1, PM10);
-	retv_if(ret != 0, -1);
+	goto_if(ret !=0, ERROR);
 	ret = tp_set_field_value(handle, 2, PM25);
-	retv_if(ret != 0, -1);
+	goto_if(ret !=0, ERROR);
 	ret = tp_set_field_value(handle, 3, PM25_);
-	retv_if(ret != 0, -1);
+	goto_if(ret !=0, ERROR);
 	ret = tp_set_field_value(handle, 4, FanSpeed);
-	retv_if(ret != 0, -1);
+	goto_if(ret !=0, ERROR);
 
 	//thingspark 데이터 송신
 	ret = tp_send_data(handle);
-	retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
+	goto_if(ret !=0, ERROR);
+	//retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 
 	//송신 마무리
 	ret = tp_finalize(handle);
 	retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 
 	return ECORE_CALLBACK_RENEW;
+ERROR:
+	//tp_set_value에서 에러가 발생할 경우 handle할당여부 확인후 해제
+	if(handle){
+		ret = tp_finalize(handle);
+		retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
+	}
+	return -1;
+
 }
 
 /////////////////////////아두이노 I2C통신 관련 함수부 시작//////////////////////////////
