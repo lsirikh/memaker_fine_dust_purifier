@@ -48,13 +48,14 @@ void resource_close_arduino(void)
 	resource_ai2c_s.opened = 0;
 }
 
-int resource_read_arduino(int i2c_bus, uint16_t *out_value)
+int resource_read_arduino(int i2c_bus, uint16_t *out_value, int param_num)
 {
 	int ret = PERIPHERAL_ERROR_NONE;
 
 
 	//아두이노로 부터 수신한 데이터를 저장하는 버퍼
-	uint8_t buf[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};//read data buffer
+	uint8_t buf[READ_BUFFER] = {0x00};//read data buffer
+	//uint8_t buf[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};//read data buffer
 
 
 	static int count = 0;
@@ -79,16 +80,27 @@ int resource_read_arduino(int i2c_bus, uint16_t *out_value)
 
 
 	//아두이노로 수신한 데이터를 처리하여 out_value배열에 저장함 추후 value에 값이 됨
-	out_value[0] = buf[1];
-	out_value[0] = out_value[0]<<8|buf[0];
-	out_value[1] = buf[3];
-	out_value[1] = out_value[1]<<8|buf[2];
-	out_value[2] = buf[5];
-	out_value[2] = out_value[2]<<8|buf[4];
-	out_value[3] = buf[7];
-	out_value[3] = out_value[3]<<8|buf[6];
-	out_value[4] = buf[9];
-	out_value[4] = out_value[4]<<8|buf[8];
+
+	//	out_value[0] = buf[1];
+	//	out_value[0] = out_value[0]<<8|buf[0];
+	//
+	//	out_value[1] = buf[3];
+	//	out_value[1] = out_value[1]<<8|buf[2];
+	//
+	//	out_value[2] = buf[5];
+	//	out_value[2] = out_value[2]<<8|buf[4];
+	//
+	//	out_value[3] = buf[7];
+	//	out_value[3] = out_value[3]<<8|buf[6];
+	//
+	//	out_value[4] = buf[9];
+	//	out_value[4] = out_value[4]<<8|buf[8];
+
+	//forloop을 활용한 수신 데이터 프로세싱
+	for(int i=0;i < param_num; i++){
+		out_value[i] = buf[2*i+1];
+		out_value[i] = out_value[i]<<8|buf[2*i];
+	}
 	_D("out_value : %d, %d, %d, %d, %d", out_value[0], out_value[1], out_value[2], out_value[3], out_value[4]);
 
 
@@ -96,12 +108,12 @@ int resource_read_arduino(int i2c_bus, uint16_t *out_value)
 }
 
 //아두이노로 명령을 보내는 함수
-int resource_write_arduino(int i2c_bus, uint8_t *input_value)
+int resource_write_arduino(int i2c_bus, uint8_t *input_value, int param_num)
 {
 	int ret = PERIPHERAL_ERROR_NONE;
 
-
-	uint8_t cbuf[] = { 0x00, 0x00, 0x00, 0x00 };//command buffer
+	uint8_t cbuf[WRITE_BUFFER]={0x00};//command buffer
+	//uint8_t cbuf[] = { 0x00, 0x00};//command buffer
 
 
 	if (!resource_ai2c_s.opened) {
@@ -115,8 +127,12 @@ int resource_write_arduino(int i2c_bus, uint8_t *input_value)
 	}
 
 	//2개의 cbuf만 활용하여 데이터 저장
-	cbuf[0] = (uint8_t)input_value[0];//set commnand for number in arduino
-	cbuf[1] = (uint8_t)input_value[1];//set commnand for value in arduino
+	//cbuf[0] = (uint8_t)input_value[0];//set commnand for number in arduino
+	//cbuf[1] = (uint8_t)input_value[1];//set commnand for value in arduino
+	//forloop을 활용한 송신데이터 프로세싱
+	for(int i=0;i < param_num; i++){
+		cbuf[i] = (uint8_t)input_value[i];
+	}
 	_D("input_value[0], input_value[1] : %d, %d", input_value[0], input_value[1]);
 
 	ret = peripheral_i2c_write(resource_ai2c_s.pin_h, cbuf, WRITE_BUFFER);

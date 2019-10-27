@@ -65,7 +65,8 @@ static NubisonIF *cloudif = NULL;
 #define ARDUINO_GATHER_INTERVAL (0.7f)
 
 ////////////////// value 배열의 사이즈 ////////////////////
-#define PARAM_SIZE 5
+#define IN_PARAM_NUM 5
+#define OUT_PARAM_NUM 2
 
 ///////////////// 아두이노 수신데이터 구조체///////////////
 typedef struct app_data_s {
@@ -82,7 +83,7 @@ typedef struct app_data_s {
 //value[2] PM2.5+의 미세먼지 센서 값
 //value[3] Fan Speed의 단계
 //value[4] AUTO 모드 여부
-static uint16_t value[PARAM_SIZE]; //an array variable for data from arduino with I2C
+static uint16_t value[IN_PARAM_NUM]; //an array variable for data from arduino with I2C
 
 // Nubison Cloud과 통신하는 콜백 함수
 //1.Device 의 상태를 조회하는 콜백
@@ -124,7 +125,7 @@ void NubisonCB_Invoke(char* rdata, char* api, char* uniqkey) {
 	//해당 경우 get_value ==1 은 AUTO(자동)
 
 	//누비슨으로 부터 받은 데이터를 valueSet 배열에 저장 한 후, resource_write_arduino로 송신할 떄 활용
-	uint8_t valueSet[2] = { 0, 0 };
+	uint8_t valueSet[OUT_PARAM_NUM] = {0};
 
 	strncpy(tmp, rdata, BUFSIZE);
 
@@ -156,7 +157,7 @@ void NubisonCB_Invoke(char* rdata, char* api, char* uniqkey) {
 			_D("Auto Mode is ON");
 		}
 	}
-	ret = resource_write_arduino(I2C_BUS_NUMBER, valueSet);
+	ret = resource_write_arduino(I2C_BUS_NUMBER, valueSet, OUT_PARAM_NUM);
 	_D("2, ret = %d", ret);
 	//retv_if(ret != 0, -1);
 
@@ -231,6 +232,8 @@ Eina_Bool _get_sensor_value(void *data) {
 	ret = tp_initialize("################", &handle);
 	retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 
+	_D("Check handle(tp_handle_h): %d(%p)", handle, handle);
+
 	//thingspark에서 활용되는 부분으로 각 변수는 센서의 값을 저장하도록 함
 	//char s1[10];               // 변환한 문자열을 저장할 배열
 	char PM10[5];               // 변환한 문자열을 저장할 배열
@@ -266,7 +269,7 @@ Eina_Bool _get_sensor_value(void *data) {
 	return ECORE_CALLBACK_RENEW;
 ERROR:
 	//tp_set_value에서 에러가 발생할 경우 handle할당여부 확인후 해제
-	if(handle != NULL){
+	if(handle){
 		ret = tp_finalize(handle);
 		retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 	}
@@ -284,7 +287,7 @@ static Eina_Bool __get_arduino_cb(void *data) {
 	retv_if(!ad, ECORE_CALLBACK_CANCEL);
 
 	//resource_read_arduino를 통해 아두이노 값 수신
-	ret = resource_read_arduino(I2C_BUS_NUMBER, value);
+	ret = resource_read_arduino(I2C_BUS_NUMBER, value, IN_PARAM_NUM);
 	retv_if(ret != 0, ECORE_CALLBACK_RENEW);
 	_D("Data from Arduino through I2C communication : %d(over PM1.0), %d(under PM2.5), %d(over PM2.5), %d(FAN SPEED), %d(AUTO:1, MANUAL:0)",
 			value[0], value[1], value[2], value[3], value[4]);

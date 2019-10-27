@@ -26,9 +26,9 @@
  * @return 0 on success, otherwise a negative error value
  * @see If the i2c bus is not open, creates i2c handle before reading data from the i2c slave device.
  */
-extern int resource_read_arduino(int i2c_bus, uint16_t *out_value);
+extern int resource_read_arduino(int i2c_bus, uint16_t *out_value, int param_num);
 
-extern int resource_write_arduino(int i2c_bus, uint8_t *input_value);
+extern int resource_write_arduino(int i2c_bus, uint8_t *input_value, int param_num);
 
 #endif /* __RESOURCE_AI2C_H__ */
 
