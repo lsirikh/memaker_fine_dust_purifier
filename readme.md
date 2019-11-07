@@ -4,6 +4,7 @@
 * 팀원  2.  이준수 (기획 / 하드웨어 /3D출력관리 /프로젝트관리)
 ## 프로젝트 제목
 * “iot기반 가정용 미세먼지측정기 제작 및 앱 관리, 측정데이터시스템 구축” 
+<img src="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/%EC%A0%95%EB%A9%B4%EC%83%B7.png">
 
 ## 프로젝트 배경 혹은 목적
 -배 경 :  최근 미세먼지의 증가로 인해 가정에서 미세먼지 공기 질에 대한 관심 및 측정데이터의 관리가 국가적 정책과제*
