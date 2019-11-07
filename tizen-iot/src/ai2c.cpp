@@ -33,8 +33,11 @@ extern "C" {
 #include <tizen_2_thingspark.h>
 
 //아두이노 I2C 통신관련 헤더파일
-#include "resource.h"
+#include "resource/resource_ai2c.h"
+#include "resource/resource_ai2c_internal.h"
 }
+
+
 
 // Nubison IoT 연계 모듈 헤더파일
 #include "nubisonif.hpp"
@@ -273,7 +276,7 @@ ERROR:
 		ret = tp_finalize(handle);
 		retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 	}
-	return -1;
+	return ECORE_CALLBACK_CANCEL;
 
 }
 

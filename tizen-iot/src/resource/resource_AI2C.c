@@ -22,7 +22,6 @@
 #include <sys/time.h>
 
 #include "log.h"
-#include "resource_internal.h"
 
 #define I2C_PIN_MAX 28
 
