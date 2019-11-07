@@ -2,13 +2,32 @@
 * 팀명  : MEMAKER
 * 팀원 1.  이기호 (프로그램작성 /디자인/개발/디버깅/ 발표 등)
 * 팀원  2.  이준수 (기획 / 하드웨어 /3D출력관리 /프로젝트관리)
+
+
 ## 프로젝트 제목
 * “iot기반 가정용 미세먼지측정기 제작 및 앱 관리, 측정데이터시스템 구축” 
+<img src="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/%EC%A0%95%EB%A9%B4%EC%83%B7.png">
+<img src="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/main%20case%20v16.png">
 
 ## 프로젝트 배경 혹은 목적
--배 경 :  최근 미세먼지의 증가로 인해 가정에서 미세먼지 공기 질에 대한 관심 및 측정데이터의 관리가 국가적 정책과제*
+- 배 경 :  최근 미세먼지의 증가로 인해 가정에서 미세먼지 공기 질에 대한 관심 및 측정데이터의 관리가 국가적 정책과제*
   (iot 기반스마트융합 활성화 방안 정책과제 설정-산업통상자원부2016.12)
--목 적 : 향 후 많은 IOT 기기의 접속에 따른 스마트폰 작동 과 모니터링 ,  측정 데이터의 집중 관리(빅데이터)  및 데이터 활용의 구체적 실현  
+- 목 적 : 향 후 많은 IOT 기기의 접속에 따른 스마트폰 작동 과 모니터링 ,  측정 데이터의 집중 관리(빅데이터)  및 데이터 활용의 구체적 실현 
+
+## 프로젝트 제품의 특징
+1) 3가지 화면 전환을 통한 제품 컨트롤(미세먼지 농도 측정, 팬 속도 조절, 오토/수동 모두 설정)
+<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/OLED.png">
+
+2) PM2.5 미세먼지 필터 활용가능
+<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/후면샷_필터개방.png">
+
+3) 타이젠 OS 클라우드 플랫폼 Nubison 활용을 통한 원격 컨트롤 및 모니터링
+<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/nubison_memaker.png">
+
+4) 타이젠 OS 클라우드 플랫폼 Thingspark 데이터 수집 
+<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/thingspark.png">
+
+
 ## 타이젠 오픈소스에 컨트리뷰션한 내역
 없음
 
