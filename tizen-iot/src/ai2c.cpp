@@ -276,7 +276,7 @@ ERROR:
 		ret = tp_finalize(handle);
 		retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 	}
-	return ECORE_CALLBACK_CANCEL;
+	return ECORE_CALLBACK_RENEW;
 
 }
 
@@ -345,7 +345,7 @@ void timer_setup(void *data) {
 		ecore_timer_del(ad->getter_thingspark);
 
 	//ecore timer 등록으로 Thingspark 연결 가능할 경우 통신
-	ad->getter_thingspark = ecore_timer_add(30.0f, _get_sensor_value, NULL);
+	ad->getter_thingspark = ecore_timer_add(40.0f, _get_sensor_value, NULL);
 	_D("1, ad->getter_thingspark = %p", ad->getter_thingspark);
 	if (!ad->getter_thingspark) {
 		_E("cannot add a timer \"Cannot register ecore timer for thingspark data transmission\"");
