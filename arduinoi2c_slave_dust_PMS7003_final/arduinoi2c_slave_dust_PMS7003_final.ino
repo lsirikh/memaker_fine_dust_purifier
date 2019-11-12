@@ -19,7 +19,8 @@ SoftwareSerial mySerial(2,7); // Arudino Uno port RX, TX
 // devices with all constructor calls is here: https://github.com/olikraus/u8glib/wiki/device
 // All the information you want is here: https://github.com/olikraus/u8glib
 
-U8GLIB_SH1106_128X64 u8g(13, 11, 10, 9, 8);  // D0=13, D1=11, CS=10, DC=9, Reset=8
+//U8GLIB_SH1106_128X64 u8g(13, 11, 10, 9, 8);  // D0=13, D1=11, CS=10, DC=9, Reset=8
+U8GLIB_SH1106_128X64 u8g(13, 12, 9, 10, 11);  // D0(CLK)=13, D1(MOSI)=12, CS=9, DC=10, Reset(RES)=11
 
 ////////////////////////////OLED variables start/////////////////////////////////////////////
 int initialCount=1;
