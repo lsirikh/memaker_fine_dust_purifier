@@ -28,26 +28,6 @@
 <img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/thingspark.png">
 
 
-## Wiring 정보
-
-* 1) Entire Wiring Diagram
-<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/전체연결도(수정).png">
-
-* 2) Fine Dust Sensor Wiring Diagram
-<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/아두이노&pms7003.png">
-
-* 3) Motor & Motor Driver Wiring Diagram
-<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/아두이노&모터드라이버.png">
-
-* 4) Arduino & Raspberri Pi Wiring Diagram
-<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/타이젠&아두이노&레벨시프트.png">
-
-* 5) Tactile Switch Wiring Diagram
-<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/아두이노&택트스위치.png">
-
-* 6) OLED Display Wiring Diagram
-<img src ="https://github.com/lsirikh/memaker_fine_dust_purifier/blob/master/img%20resources/oled_128x64(수정).png">
-
 ## 타이젠 오픈소스에 컨트리뷰션한 내역
 없음
 
