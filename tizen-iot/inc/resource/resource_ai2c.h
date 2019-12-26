@@ -30,5 +30,10 @@ extern int resource_read_arduino(int i2c_bus, uint16_t *out_value, int param_num
 
 extern int resource_write_arduino(int i2c_bus, uint8_t *input_value, int param_num);
 
+/**
+ * @brief Destroy the i2c handle and changes the gpio pin state to the close(0).
+ */
+extern void resource_close_arduino(void);
+
 #endif /* __RESOURCE_AI2C_H__ */
 

@@ -34,7 +34,7 @@ extern "C" {
 
 //아두이노 I2C 통신관련 헤더파일
 #include "resource/resource_ai2c.h"
-#include "resource/resource_ai2c_internal.h"
+//#include "resource/resource_ai2c_internal.h"
 }
 
 
@@ -60,6 +60,12 @@ static const int cloudifport = 1883;
 
 //Nubison IoT 연계 모듈 클래스 인스턴스
 static NubisonIF *cloudif = NULL;
+
+//Thingspark API key
+// TODO API_KEY 변경
+// thingspark.kr 에서 채널별로 부여되는 api-key를 입력합니다.
+// api-key : ################
+static char thingspark_key[32] = "################";
 
 ////////////////// 아두이노 I2C 통신 버스 설정//////////////
 //////////////라즈베리파이에는 버스가 하나 존재/////////////
@@ -229,10 +235,8 @@ Eina_Bool _get_sensor_value(void *data) {
 	int ret = 0;
 	tp_handle_h handle = NULL;
 
-	// TODO API_KEY 변경
-	// thingspark.kr 에서 채널별로 부여되는 api-key를 입력합니다.
-	// api-key : ################
-	ret = tp_initialize("################", &handle);
+	//ret = tp_initialize("################", &handle);
+	ret = tp_initialize(thingspark_key, &handle);
 	retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 
 	_D("Check handle(tp_handle_h): %d(%p)", handle, handle);
