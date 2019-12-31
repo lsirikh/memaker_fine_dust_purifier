@@ -235,14 +235,12 @@ Eina_Bool _get_sensor_value(void *data) {
 	int ret = 0;
 	tp_handle_h handle = NULL;
 
-	//ret = tp_initialize("################", &handle);
 	ret = tp_initialize(thingspark_key, &handle);
-	retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
+	goto_if(ret !=0, ERROR);
 
-	_D("Check handle(tp_handle_h): %d(%p)", handle, handle);
+	_D("Check handle(tp_handle_h): %p", handle);
 
 	//thingspark에서 활용되는 부분으로 각 변수는 센서의 값을 저장하도록 함
-	//char s1[10];               // 변환한 문자열을 저장할 배열
 	char PM10[5];               // 변환한 문자열을 저장할 배열
 	char PM25[5];               // 변환한 문자열을 저장할 배열
 	char PM25_[5];               // 변환한 문자열을 저장할 배열
@@ -267,7 +265,6 @@ Eina_Bool _get_sensor_value(void *data) {
 	//thingspark 데이터 송신
 	ret = tp_send_data(handle);
 	goto_if(ret !=0, ERROR);
-	//retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
 
 	//송신 마무리
 	ret = tp_finalize(handle);
@@ -276,6 +273,7 @@ Eina_Bool _get_sensor_value(void *data) {
 	return ECORE_CALLBACK_RENEW;
 ERROR:
 	//tp_set_value에서 에러가 발생할 경우 handle할당여부 확인후 해제
+	_D("Program errors occurred in __get_sensor_value for thingspark");
 	if(handle){
 		ret = tp_finalize(handle);
 		retv_if(ret != 0, ECORE_CALLBACK_CANCEL);
