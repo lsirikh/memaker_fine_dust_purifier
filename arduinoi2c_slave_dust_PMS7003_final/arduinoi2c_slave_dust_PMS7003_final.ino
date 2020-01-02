@@ -460,7 +460,7 @@ const int inputB = 5;//Variable assigned to set the pin number for the tact swit
 bool flag = false;//Flag variable used to check whether the button is pressed or not 
 
 boolean buttonState;    //Set the current status of the switch button.(default:low)
-boolean lastButtonState = LOW; //Previous status of the button
+boolean lastButtonState = false; //Previous status of the button
 
 unsigned long lastDebounceTime = 0; //Variable assigned to check the last debounce time.
 unsigned long debounceDelay = 25; //The minimum period for the button to be recognized 
@@ -660,21 +660,24 @@ void loop() {
 ///////////////////////////////////미세먼지 파트 끝///////////////////////////////////
   
 ////////////////////////////////택트 스위치 트리거 확인 및 처리 파트 ///////////////////  
-  int reading; //digitalRead 값 확인용 변수
+  boolean reading=false; //digitalRead 값 확인용 변수
   int sel=0; //2개의 버튼 중 1개를 찾는 변수
   
   //택트 스위치 트리거 확인 코드
   if(digitalRead(chB)){
     reading = digitalRead(chB);
+    Serial.println(reading);
     sel=1;
   }else if(digitalRead(inputB)){
     reading = digitalRead(inputB);
+    Serial.println(reading);
     sel=2;
   }
 
   //Software 방식으로 tact swith의 chattering(디바운싱) 해결 코드
   if (reading != lastButtonState){  //스위치의 이전과 지금 상태가 다르면
     lastDebounceTime = millis();   //초를 기록합니다.
+    Serial.println("reading != lastButtonState");
     //택트 스위치 모드일 때 활용되는 PULL UP 변수
     flag = true;
   }
@@ -717,11 +720,18 @@ void loop() {
     }
 
     //reading값과 buttonState를 비교하여, 다르면 현재 reading값을 buttonState에 넣어줌
-    if (reading != buttonState){
-      buttonState = reading;  //스위치를 누른 값과 다르면 대입합니다.
-    }
+//    if (reading != buttonState){
+//      Serial.print("buttonState was changed!");
+//      buttonState = reading;  //스위치를 누른 값과 다르면 대입합니다.
+//    }
+    
   }
-  lastButtonState = reading; // 마지막 버튼상태를 reading의 값으로 저장함
+  if (reading != lastButtonState){
+      Serial.print("lastButtonState was changed!");
+      //buttonState = reading;  //스위치를 누른 값과 다르면 대입합니다.
+      lastButtonState = reading; // 마지막 버튼상태를 reading의 값으로 저장함
+  }
+  
   /////////////////////////////////////////////////////////////////////////////////////
   
   if(commandFlag){
