@@ -19,8 +19,8 @@ SoftwareSerial mySerial(2,7); // Arudino Uno port RX, TX
 // devices with all constructor calls is here: https://github.com/olikraus/u8glib/wiki/device
 // All the information you want is here: https://github.com/olikraus/u8glib
 
-//U8GLIB_SH1106_128X64 u8g(13, 11, 10, 9, 8);  // D0=13, D1=11, CS=10, DC=9, Reset=8
-U8GLIB_SH1106_128X64 u8g(13, 12, 9, 10, 11);  // D0(CLK)=13, D1(MOSI)=12, CS=9, DC=10, Reset(RES)=11
+U8GLIB_SH1106_128X64 u8g(12, 11, 10, 9, 8);  // D0=13, D1=11, CS=10, DC=9, Reset=8
+//U8GLIB_SH1106_128X64 u8g(13, 12, 9, 10, 11);  // D0(CLK)=13, D1(MOSI)=12, CS=9, DC=10, Reset(RES)=11
 
 ////////////////////////////OLED variables start/////////////////////////////////////////////
 int initialCount=1;
@@ -666,18 +666,18 @@ void loop() {
   //택트 스위치 트리거 확인 코드
   if(digitalRead(chB)){
     reading = digitalRead(chB);
-    Serial.println(reading);
+    //Serial.println(reading);
     sel=1;
   }else if(digitalRead(inputB)){
     reading = digitalRead(inputB);
-    Serial.println(reading);
+    //Serial.println(reading);
     sel=2;
   }
 
   //Software 방식으로 tact swith의 chattering(디바운싱) 해결 코드
   if (reading != lastButtonState){  //스위치의 이전과 지금 상태가 다르면
     lastDebounceTime = millis();   //초를 기록합니다.
-    Serial.println("reading != lastButtonState");
+    //Serial.println("reading != lastButtonState");
     //택트 스위치 모드일 때 활용되는 PULL UP 변수
     flag = true;
   }
@@ -690,41 +690,11 @@ void loop() {
       //누른 버튼에 따른 동작 코드
       //화면 전환 버튼은 sel=1이고, 이 버튼을 누르면
       //frameControl 전역변수를 변화시키면서, 세팅된 OLED화면을 바꿔주게 됨
-      if(sel == 1){
-        Serial.println("Frame Control button was hit");
-        frameControl++;
-        Serial.print("frameControl:");
-        Serial.println(frameControl);
-        if(frameControl>2){
-          frameControl=0;
-        }
-      }else if(sel == 2){
-        //input을 주는 버튼으로 sel=2이고, 좀 더 많은 기능을 함
-        //frameControl 값이 1이고, 동시에 MANUAL 모드 일 경우 팬의 속도를 증가시키게됨.
-        Serial.println("Function Control button was hit");
-        if(frameControl==1 && !isAuto){
-          fanSpeed +=50;
-          if(fanSpeed > 250)
-            fanSpeed = 0;
-          Serial.print("fanSpeed:");
-          Serial.println(fanSpeed);
-          
-        }else if(frameControl==2){
-          isAuto = !isAuto;
-          Serial.print("isAuto:");
-          Serial.println(isAuto);
-        }
-      }
+      //pageControl 함수를 활용하여 OLED 페이지 전환 혹은 데이터 입력을 수행
+      pageControl(sel);
       flag=false; //Tact switch로 명령을 전달하는 과정을 끝냈으므로, flag를 false로 전환하여
                   //중복명령과정을 제한함
     }
-
-    //reading값과 buttonState를 비교하여, 다르면 현재 reading값을 buttonState에 넣어줌
-//    if (reading != buttonState){
-//      Serial.print("buttonState was changed!");
-//      buttonState = reading;  //스위치를 누른 값과 다르면 대입합니다.
-//    }
-    
   }
   if (reading != lastButtonState){
       Serial.print("lastButtonState was changed!");
@@ -758,37 +728,24 @@ void loop() {
   //delay(3000);명령을 쓰지 않는 이유는 SW가 계속 다른 처리를 해야할 필요가 있기 때문.
   //ex)OLED 표시, PMS7003 데이터 수신, Raspberry Pi3 데이터 송수신 등
   if((millis() - lastCheckTime) > commandDelay){
-    Serial.println("INPUT command to change PWM"); 
+    //Serial.println("INPUT command to change PWM"); 
     
     //이 코드가 실행되는 이유는 isAuto가 true일 때 즉, AUTO MODE 일 때 만 적용되기 때문에
     //해당 조건을 통해서 작동하도록 구현
     if(isAuto){
       //AUTO MODE fan control//
-      Serial.println("AUTO is ON");
+      //Serial.println("AUTO is ON");
       //기준설정을 위한 3가지 미세먼지 입자영역 평균
       //avrAirCond의 값은 AUTO 모드일 경우에만 의미를 지님
       int avrAirCond = (int)((PM03_10+PM10_25+PM25_)/3); //3가지 입자 구간의 평균을 산정
-      Serial.print("Air condition:");
-      Serial.println(avrAirCond);
+      //Serial.print("Air condition:");
+      //Serial.println(avrAirCond);
       //구간에 따라 fanSpeed 전역변수 값을 할당함
-      if(avrAirCond<=25){
-        fanSpeed=0;
-      }else if(avrAirCond>25&&avrAirCond<40){
-        fanSpeed=50;
-      }else if(avrAirCond>=40&&avrAirCond<50){
-        fanSpeed=100;
-      }else if(avrAirCond>=50&&avrAirCond<60){
-        fanSpeed=150;
-      }else if(avrAirCond>=60&&avrAirCond<70){
-        fanSpeed=200;
-      }else if(avrAirCond>=70){
-        fanSpeed=250;
-      }
+      chFanSpeed(avrAirCond);
       //할당된 fanSpeed 값을 이용해서 checkFanSpeed 함수로 전달
       checkFanSpeed(fanSpeed);
-    }else{
-      Serial.println("AUTO is OFF");
     }
+    
     //다시 commandFlag를 true로 전환하여 3초를 측정하기 위한 시점을 잡을 수 있도록 함
     commandFlag =true;
   }
@@ -817,6 +774,51 @@ void loop() {
     delay(50);
   }
 }  
+
+
+void pageControl(int sel){
+  if(sel == 1){
+    //Serial.println("Frame Control button was hit");
+    frameControl++;
+    //Serial.print("frameControl:");
+    //Serial.println(frameControl);
+    if(frameControl>2){
+      frameControl=0;
+    }
+  }else if(sel == 2){
+    //input을 주는 버튼으로 sel=2이고, 좀 더 많은 기능을 함
+    //frameControl 값이 1이고, 동시에 MANUAL 모드 일 경우 팬의 속도를 증가시키게됨.
+    //Serial.println("Function Control button was hit");
+    if(frameControl==1 && !isAuto){
+      fanSpeed +=50;
+      if(fanSpeed > 250)
+        fanSpeed = 0;
+      //Serial.print("fanSpeed:");
+      //Serial.println(fanSpeed);
+      
+    }else if(frameControl==2){
+      isAuto = !isAuto;
+      //Serial.print("isAuto:");
+      //Serial.println(isAuto);
+    }
+  }
+}
+
+void chFanSpeed(int avrAirCond){
+  if(avrAirCond<=30){
+    fanSpeed=0;
+  }else if(avrAirCond>30&&avrAirCond<40){
+    fanSpeed=50;
+  }else if(avrAirCond>=40&&avrAirCond<50){
+    fanSpeed=100;
+  }else if(avrAirCond>=50&&avrAirCond<60){
+    fanSpeed=150;
+  }else if(avrAirCond>=60&&avrAirCond<70){
+    fanSpeed=200;
+  }else if(avrAirCond>=70){
+    fanSpeed=250;
+  }
+}
 
 // callback for received data 
 // 라즈베리파이로 부터 받은 I2C 통신 명령을 확인하는 함수
