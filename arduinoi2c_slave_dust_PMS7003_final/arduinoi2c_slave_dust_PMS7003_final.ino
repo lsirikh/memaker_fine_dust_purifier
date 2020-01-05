@@ -660,20 +660,18 @@ void loop() {
 ///////////////////////////////////미세먼지 파트 끝///////////////////////////////////
   
 ////////////////////////////////택트 스위치 트리거 확인 및 처리 파트 ///////////////////  
-  boolean reading=false; //digitalRead 값 확인용 변수
+  bool reading=false; //digitalRead 값 확인용 변수
   int sel=0; //2개의 버튼 중 1개를 찾는 변수
   
   //택트 스위치 트리거 확인 코드
   if(digitalRead(chB)){
     reading = digitalRead(chB);
-    //Serial.println(reading);
     sel=1;
   }else if(digitalRead(inputB)){
     reading = digitalRead(inputB);
-    //Serial.println(reading);
     sel=2;
   }
-
+  
   //Software 방식으로 tact swith의 chattering(디바운싱) 해결 코드
   if (reading != lastButtonState){  //스위치의 이전과 지금 상태가 다르면
     lastDebounceTime = millis();   //초를 기록합니다.
@@ -681,12 +679,12 @@ void loop() {
     //택트 스위치 모드일 때 활용되는 PULL UP 변수
     flag = true;
   }
-
+  
   //Tact Swith를 처음 누른 시간의 간격이 25ms 이상이 되면 누른 상태를 인식하도록 구현
   if ((millis() - lastDebounceTime) > debounceDelay){//초가 기록되는 차이가 25ms보다 크면
     //25ms이상일 때, 해당 코드로 진입
     //flag를 통해 첫 PULL UP 상태를 확인및 명령 전달 1회로 제한
-    if(flag){
+    if(flag&reading){
       //누른 버튼에 따른 동작 코드
       //화면 전환 버튼은 sel=1이고, 이 버튼을 누르면
       //frameControl 전역변수를 변화시키면서, 세팅된 OLED화면을 바꿔주게 됨
@@ -696,13 +694,10 @@ void loop() {
                   //중복명령과정을 제한함
     }
   }
-  if (reading != lastButtonState){
-      Serial.print("lastButtonState was changed!");
-      //buttonState = reading;  //스위치를 누른 값과 다르면 대입합니다.
-      lastButtonState = reading; // 마지막 버튼상태를 reading의 값으로 저장함
-  }
   
-  /////////////////////////////////////////////////////////////////////////////////////
+  lastButtonState = reading; // 마지막 버튼상태를 reading의 값으로 저장함
+    
+/////////////////////////////////////////////////////////////////////////////////////
   
   if(commandFlag){
     //commandFlag가 처음에 true로 진입을 하면 약 3초간 AUTO mode 커멘드를
@@ -710,7 +705,7 @@ void loop() {
     lastCheckTime = millis(); //commandFlag가 들어온 값을 기반으로 첫 시작 시점 저장
     commandFlag=false; //3초 간격이 끝나기 전까지 이 조건문으로 들어오지 못하도록 commadFlag false 설정
   }
-
+  
   //만약 Auto 모드가 아니면 fan 속도를 바꾼 내용이 즉각적으로 반영될 수 있도록 조건문 구성
   //코드가 이렇게 구성된 이유는 소프트웨어적인 이유가 아니라 하드웨어적인 이슈가 있어서 이렇게 구성
   //AUTO 모드의 경우 약 0.5초 ~ 1초 사이로 갱신되는 PMS7003 미세먼지 수치의 변화가 FAN의 속도를 변화시키는
@@ -722,7 +717,7 @@ void loop() {
     //MANUAL MODE의 경우 fan control을 실시간으로 바꿀 수 있도록 함.
      checkFanSpeed(fanSpeed); //fanSpeed의 값에 따라 checkFanSpeed에서 팬의 속도를 변화시키도록 함.
   }
-
+  
   //AUTO 모드일 경우, FAN 속도에 명령을 주는 구간
   //3초의 시간 간격을 통해 실행이 될 수 있도록 함.
   //delay(3000);명령을 쓰지 않는 이유는 SW가 계속 다른 처리를 해야할 필요가 있기 때문.
@@ -750,13 +745,13 @@ void loop() {
     commandFlag =true;
   }
 
-  // picture loop
-  // 이 함수는 U8glib라는 라이브러리를 활용한 함수로 라이브러리에서 제공하는 규칙을 정확하게 따라야함
-  // 참고: https://github.com/olikraus/u8glib
-  // wiki: https://github.com/olikraus/u8glib/wiki
-  // u8g.firstPage()는 그림을 그리는 loop를 개별적으로 돌리는 데 그 루프의 시작점을 나타냄
-  // 따라서 이러한 루프와 draw()함수를 쓰는 구간은 복수개로 만들면 정상작동을 안함
-  // 자세한 내용은 링크 참조
+// picture loop
+// 이 함수는 U8glib라는 라이브러리를 활용한 함수로 라이브러리에서 제공하는 규칙을 정확하게 따라야함
+// 참고: https://github.com/olikraus/u8glib
+// wiki: https://github.com/olikraus/u8glib/wiki
+// u8g.firstPage()는 그림을 그리는 loop를 개별적으로 돌리는 데 그 루프의 시작점을 나타냄
+// 따라서 이러한 루프와 draw()함수를 쓰는 구간은 복수개로 만들면 정상작동을 안함
+// 자세한 내용은 링크 참조
   u8g.firstPage();  
   do {
       draw();
@@ -831,10 +826,10 @@ void receiveData(int byteCount) {
     //0000000-1111111(10진수로 128개 정도)단위를 활용할 수 있음
     number = Wire.read();  
     value=Wire.read();
-    Serial.print("data received: ");  
-    Serial.println(number);  
-    Serial.print("data received: ");  
-    Serial.println(value);  
+    //Serial.print("data received: ");  
+    //Serial.println(number);  
+    //Serial.print("data received: ");  
+    //Serial.println(value);  
     //number가 4이면 AUTO 모드 ON/OFF하는 명령코드가 됨
     //이 명령코드는 NUBISON에서 원격으로 데이터 콘트롤하는 부분과 서로 프로토콜을 맞춰줌
     //사전에 타이젠 코드에서 조건에 맞춰서 명령코드를 설정
@@ -883,8 +878,8 @@ void sendData() {
 void checkFanSpeed(int speed){
 
   if(preFanSpeed != speed){
-     Serial.println(preFanSpeed);
-     Serial.println(speed);
+     //Serial.println(preFanSpeed);
+     //Serial.println(speed);
     if(speed > preFanSpeed){
      
         for(int fan=preFanSpeed;fan<=speed;fan++){
