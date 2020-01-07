@@ -19,8 +19,8 @@ SoftwareSerial mySerial(2,7); // Arudino Uno port RX, TX
 // devices with all constructor calls is here: https://github.com/olikraus/u8glib/wiki/device
 // All the information you want is here: https://github.com/olikraus/u8glib
 
-U8GLIB_SH1106_128X64 u8g(12, 11, 10, 9, 8);  // D0=13, D1=11, CS=10, DC=9, Reset=8
-//U8GLIB_SH1106_128X64 u8g(13, 12, 9, 10, 11);  // D0(CLK)=13, D1(MOSI)=12, CS=9, DC=10, Reset(RES)=11
+//U8GLIB_SH1106_128X64 u8g(12, 11, 10, 9, 8);  // D0=13, D1=11, CS=10, DC=9, Reset=8
+U8GLIB_SH1106_128X64 u8g(13, 12, 9, 10, 11);  // D0(CLK)=13, D1(MOSI)=12, CS=9, DC=10, Reset(RES)=11
 
 ////////////////////////////OLED variables start/////////////////////////////////////////////
 int initialCount=1;
@@ -826,15 +826,15 @@ void receiveData(int byteCount) {
     //0000000-1111111(10진수로 128개 정도)단위를 활용할 수 있음
     number = Wire.read();  
     value=Wire.read();
-    //Serial.print("data received: ");  
-    //Serial.println(number);  
-    //Serial.print("data received: ");  
-    //Serial.println(value);  
     //number가 4이면 AUTO 모드 ON/OFF하는 명령코드가 됨
     //이 명령코드는 NUBISON에서 원격으로 데이터 콘트롤하는 부분과 서로 프로토콜을 맞춰줌
     //사전에 타이젠 코드에서 조건에 맞춰서 명령코드를 설정
-    if (number == 4) {  
-      isAuto=value;
+    if (number == 4) {
+      if(value == 1){
+        isAuto=1;//Auto MODE
+      }else{
+        isAuto=0;//Manual MODE
+      }
     }else if(number ==3){
       //number가 3이면, FAN의 속도를 변화시켜주는 명령으로, value값에 따라 fanSpeed가 바뀜
       //fanSpeed를 변경하는 명령이 오기 위해서는 타이젠에서 받은 데이터를 통해 현재 이 보드가 
