@@ -65,8 +65,10 @@ class NubisonIF
 	void Loop();
     int Init(char *cloudaddress,int port,char* tokenkey );
     void SetCBFuntion(IF_QUERY_CALLBACK_FN,IF_INVOKE_CALLBACK_FN,IF_SETTING_CALLBACK_FN,IF_CHECK_CALLBACK_FN,IF_AUTHO_CALLBACK_FN);
-	void SendtoCloud(char *sdata,char *type,char* api,char* uniqKey);
-	void NotitoCloud(char *sdata, char *type, char* uniqKey,int min_term);
+	//클라우드 서버로 부터 온 요청의 응답으로 활용하는 함수
+    void SendtoCloud(char *sdata,char *type,char* api,char* uniqKey);
+	//Thing자체에서 특정 상황 혹은 주기에 따라 데이터 전송이 필요할 경우에 활용하는 함수
+    void NotitoCloud(char *sdata, char *type, char* uniqKey,int min_term);
 
 
     IF_QUERY_CALLBACK_FN;

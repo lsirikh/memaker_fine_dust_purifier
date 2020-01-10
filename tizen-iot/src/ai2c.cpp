@@ -98,15 +98,39 @@ static uint16_t value[IN_PARAM_NUM]; //an array variable for data from arduino w
 //1.Device 의 상태를 조회하는 콜백
 //미메이커 공기청정기 프로젝트에서 활용하지 않았음
 void NubisonCB_Query(char* rdata, char* api, char* uniqkey) {
-	//DBG("QueryCB : %s %s %s", rdata, api, uniqkey);
-
+	DBG("QueryCB : %s %s %s", rdata, api, uniqkey);
+	char tmp[BUFSIZE] = { 0, };
 	// sendData를 String 자료형 변수로 저장하여 보내주세요.
-	//char tmp[BUFSIZE] = {0, };
-	//sprintf(tmp, "%d:%d", led0, led1);
+
+	int sensor_number = atoi(rdata); //sensor_number는 명령이 들어오는 값에 따라 get_value를 구분하게 된다.
+	_D("Check rdata(%d) in QueryCB", sensor_number);
+
+
+	//sensor_number 값을 활용하여 센서 번호 확인
+	switch(sensor_number){
+	case 0:
+		sprintf(tmp, "%d", value[0]);
+		break;
+	case 1:
+		sprintf(tmp, "%d", value[1]);
+		break;
+	case 2:
+		sprintf(tmp, "%d", value[2]);
+		break;
+	case 3:
+		sprintf(tmp, "%d", value[3]);
+		break;
+	case 4:
+		sprintf(tmp, "%d", value[4]);
+		break;
+	default:
+		sprintf(tmp, "Request type was invalid");
+	}
+
 
 	// 클라우드에서 조회 요청이 왔을때 관련된내용을 담아서 전달 함
 	// 관련해서 정확히 DB에 Unit 별로 들어 게 하는 것은 클라우드 서버에서 Driver로 셋팅함
-	//cloudif->SendtoCloud(tmp, TYPE_STRING, api, uniqkey);
+	cloudif->SendtoCloud(tmp, TYPE_STRING, api, uniqkey);
 }
 
 //2.Device 의 제어 하는 콜백
@@ -136,8 +160,10 @@ void NubisonCB_Invoke(char* rdata, char* api, char* uniqkey) {
 	//누비슨으로 부터 받은 데이터를 valueSet 배열에 저장 한 후, resource_write_arduino로 송신할 떄 활용
 	uint8_t valueSet[OUT_PARAM_NUM] = {0};
 
+	//NUBISON으로 부터 전달받은 rdata를 기반으로 tmp에 사본을 만들어서 파싱에 활용
 	strncpy(tmp, rdata, BUFSIZE);
 
+	//Tokenize를 이용하여 유닛 번호와 값을 별도의 변수에 각각 저장
 	word = strtok(tmp, ":");
 	sensor_number = atoi(word);
 
@@ -171,7 +197,7 @@ void NubisonCB_Invoke(char* rdata, char* api, char* uniqkey) {
 	//retv_if(ret != 0, -1);
 
 	// 클라우드에서 조회 요청이 왔을때 관련된내용을 담아서 전달 함
-	// 제어가 성공적으로 되었는지확인해서 값을 전달함//
+	// 제어가 성공적으로 되었는지확인해서 값을 전달함
 	//cloudif->SendtoCloud(tmp, TYPE_STRING, api, uniqkey);
 	//API테스트 용으로 return용 확인 메세지 사용
 	cloudif->SendtoCloud((char *) "ok", TYPE_STRING, api, uniqkey);
@@ -191,6 +217,7 @@ void NubisonCB_Setting(char* rdata, char* api, char* uniqkey) {
 //수정하지 않음
 void NubisonCB_Check(char* rdata, char* api, char* uniqkey) {
 	DBG("CheckCB : %s %s %s", rdata, api, uniqkey);
+
 
 	// 클라우드에서 조회 요청이 왔을때 관련된내용을 담아서 전달 함
 	// 상태체크 성공적으로 되었는지확인해서 값을 전달함//
@@ -218,7 +245,14 @@ void NubisonCB_AUTHO(int authocode) {
 Eina_Bool app_idler(void *data) {
 	NubisonIF *nubif = (NubisonIF *) data;
 	char tmp[BUFSIZE] = { 0, };
+	int ret = 0;
 
+	//_connectstate를 활용하여 NUBISON 연결상태 확인
+	//이 과정없이 if문을 수행하면 nubif->Loop();에서 stuck process 현상이 발생할 수 있다.
+	ret = nubif->_connectstate;
+	goto_if(ret !=0, ERROR);
+
+	_D("NUBISON Cloud Server is connected");
 	if (nubif != NULL) {
 		nubif->Loop();
 	}
@@ -228,6 +262,12 @@ Eina_Bool app_idler(void *data) {
 	nubif->NotitoCloud(tmp, TYPE_STRING, mytoken, 1);
 
 	return ECORE_CALLBACK_RENEW;
+
+ERROR:
+	_D("NUBISON Cloud Server is disconnected");
+
+	return ECORE_CALLBACK_RENEW;
+
 }
 
 //thingspark에서 활용되는 함수 본 프로젝트 활용을 위해 편집됨
@@ -324,7 +364,7 @@ void timer_release(void *data) {
 
 	free(ad);
 }
-
+//ecore 관련된 Timer 및 Idler를 셋업하기 위한 함수
 void timer_setup(void *data) {
 	app_data *ad = (app_data *) data;
 	_D("1, ad = %p", ad);
@@ -353,6 +393,16 @@ void timer_setup(void *data) {
 		_E("cannot add a timer \"Cannot register ecore timer for thingspark data transmission\"");
 	}
 
+	//Nubison 클라우드 플랫폼으로 데이터 송신을 위한 ecore_idler_add호출
+	ecore_idler_add(app_idler, cloudif);
+
+}
+
+/////////////////////////아두이노 I2C통신 관련 함수부 종료////////////////////////////////
+
+static bool service_app_create(void *user_data) {
+	DBG(">>>>>>>>>>> App create");
+
 	//Nubison IoT 연계 모듈 생성
 	cloudif = new NubisonIF();
 
@@ -365,15 +415,6 @@ void timer_setup(void *data) {
 	if (ret != 0) {
 		ERR("Failed to connect with Nubison IoT");
 	}
-
-	ecore_idler_add(app_idler, cloudif);
-
-}
-
-/////////////////////////아두이노 I2C통신 관련 함수부 종료////////////////////////////////
-
-static bool service_app_create(void *user_data) {
-	DBG(">>>>>>>>>>> App create");
 
 	return true;
 }
